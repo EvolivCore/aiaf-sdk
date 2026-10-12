@@ -1,0 +1,33 @@
+{
+  "note": "Known-answer vector for the edge -> origin context (edge/cloudflare-worker/src/edge-context.mjs, aidr_verifier.edge). HMAC-SHA256 over \"aidr-edge-context-v1\n\" + header_context, base64url, keyed with secret as UTF-8.",
+  "secret": "known-answer-secret-0123456789abcdefghij",
+  "context": {
+    "status": "verified",
+    "aid": "aid:v1:acme-corp:01M39PEHE2B00AC3MGABFMW53K:vqef",
+    "organization": "acme-corp",
+    "org_domains": [
+      "acme.example"
+    ],
+    "agal": 1,
+    "oal": 2,
+    "kal": 1,
+    "capabilities": [
+      "http.read"
+    ],
+    "declared": {
+      "purposes": [
+        "testing"
+      ]
+    },
+    "method": "GET",
+    "target": "/api/products?page=2",
+    "iat": 1800000000
+  },
+  "header_context": "eyJ2IjoxLCJzdGF0dXMiOiJ2ZXJpZmllZCIsImFpZCI6ImFpZDp2MTphY21lLWNvcnA6MDFNMzlQRUhFMkIwMEFDM01HQUJGTVc1M0s6dnFlZiIsIm9yZ2FuaXphdGlvbiI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbImFjbWUuZXhhbXBsZSJdLCJhZ2FsIjoxLCJvYWwiOjIsImthbCI6MSwiY2FwYWJpbGl0aWVzIjpbImh0dHAucmVhZCJdLCJkZWNsYXJlZCI6eyJwdXJwb3NlcyI6WyJ0ZXN0aW5nIl19LCJtZXRob2QiOiJHRVQiLCJ0YXJnZXQiOiIvYXBpL3Byb2R1Y3RzP3BhZ2U9MiIsImlhdCI6MTgwMDAwMDAwMH0",
+  "header_signature": "3kT_qcBW6W5n-S7qhnXytWp5OpBzZKDl9sZtYwh3Xwc",
+  "request": {
+    "method": "GET",
+    "target": "/api/products?page=2"
+  },
+  "now": 1800000000
+}

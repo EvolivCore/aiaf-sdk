@@ -1,0 +1,45 @@
+{
+  "name": "@evoliv/aidr-verifier",
+  "version": "0.1.3",
+  "description": "Verify AI agents' AIDR identities on your own site, offline. One line for Express. Zero dependencies.",
+  "type": "module",
+  "main": "./index.mjs",
+  "exports": {
+    ".": "./index.mjs"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "files": [
+    "index.mjs",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "aidr",
+    "aiaf",
+    "ai-agents",
+    "agent-identity",
+    "bot-verification",
+    "express",
+    "middleware",
+    "rfc9421",
+    "http-message-signatures"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PurpleRain2025/aiaf-registry.git",
+    "directory": "sdk/node"
+  },
+  "homepage": "https://aidr.evolivcore.com",
+  "publishConfig": {
+    "access": "public"
+  }
+}

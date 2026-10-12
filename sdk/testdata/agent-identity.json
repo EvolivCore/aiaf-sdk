@@ -1,0 +1,78 @@
+{
+  "generated_by": "scripts/generate_agent_identity_fixture.py",
+  "note": "TEST KEYS ONLY \u2014 never registered anywhere. Python-made identities and the headers aidr_crypto.sign_request makes for `request`.",
+  "request": {
+    "method": "GET",
+    "url": "https://Shop.Example:443/api/products?page=2",
+    "created": 1791700000,
+    "nonce": "fixed-nonce-for-the-fixture"
+  },
+  "cases": [
+    {
+      "algorithm": "Ed25519",
+      "document": {
+        "format": "aidr-agent-identity/1",
+        "aid": "aid:v1:acme-corp:01FIXTUREED25519:test",
+        "name": "fixture-ed25519",
+        "registry": "https://registry.aidr.example",
+        "audiences": [
+          "https://shop.example"
+        ],
+        "private_jwk": {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "9jhpFQ7fO1BFce4Td9PvFBy-mWLXHWk7SgWWDAneyMs",
+          "alg": "EdDSA",
+          "use": "sig",
+          "d": "IxcQX5JTH-SqxYovQ09_XwXdwtubLzKNPyE0jnsRHv0"
+        }
+      },
+      "portable": "eyJmb3JtYXQiOiJhaWRyLWFnZW50LWlkZW50aXR5LzEiLCJhaWQiOiJhaWQ6djE6YWNtZS1jb3JwOjAxRklYVFVSRUVEMjU1MTk6dGVzdCIsIm5hbWUiOiJmaXh0dXJlLWVkMjU1MTkiLCJyZWdpc3RyeSI6Imh0dHBzOi8vcmVnaXN0cnkuYWlkci5leGFtcGxlIiwiYXVkaWVuY2VzIjpbImh0dHBzOi8vc2hvcC5leGFtcGxlIl0sInByaXZhdGVfandrIjp7Imt0eSI6Ik9LUCIsImNydiI6IkVkMjU1MTkiLCJ4IjoiOWpocEZRN2ZPMUJGY2U0VGQ5UHZGQnktbVdMWEhXazdTZ1dXREFuZXlNcyIsImFsZyI6IkVkRFNBIiwidXNlIjoic2lnIiwiZCI6Ikl4Y1FYNUpUSC1TcXhZb3ZRMDlfWHdYZHd0dWJMektOUHlFMGpuc1JIdjAifX0",
+      "public_jwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "9jhpFQ7fO1BFce4Td9PvFBy-mWLXHWk7SgWWDAneyMs",
+        "alg": "EdDSA",
+        "use": "sig"
+      },
+      "headers": {
+        "Signature-Input": "sig1=(\"@method\" \"@authority\" \"@path\");created=1791700000;keyid=\"aid:v1:acme-corp:01FIXTUREED25519:test\";alg=\"ed25519\";nonce=\"fixed-nonce-for-the-fixture\";tag=\"aidr\"",
+        "Signature": "sig1=:dhHCB+g9eG6AsNHaMKdgMbKSh/Own8mZ1+laiaSb1aioEAjCx3HCNweltBjFypvgOObinOw8yIzkb3eRA2loBQ==:"
+      }
+    },
+    {
+      "algorithm": "ES256",
+      "document": {
+        "format": "aidr-agent-identity/1",
+        "aid": "aid:v1:acme-corp:01FIXTUREES256:test",
+        "name": "fixture-es256",
+        "registry": "https://registry.aidr.example",
+        "audiences": [
+          "https://shop.example"
+        ],
+        "private_jwk": {
+          "kty": "EC",
+          "crv": "P-256",
+          "x": "7Dt7h8bxWJ44DTr8AUj9rJJ71a2Le1SUaGfKtqxtWiY",
+          "y": "p14b62UNBw0L-LOpA2Ve3nPV9GOAuLDLbusgdrErh7o",
+          "alg": "ES256",
+          "use": "sig",
+          "d": "UVdUxv3Df7xtQIZotyFk9KLFS1zrOYGRUeD5miHaDPg"
+        }
+      },
+      "portable": "eyJmb3JtYXQiOiJhaWRyLWFnZW50LWlkZW50aXR5LzEiLCJhaWQiOiJhaWQ6djE6YWNtZS1jb3JwOjAxRklYVFVSRUVTMjU2OnRlc3QiLCJuYW1lIjoiZml4dHVyZS1lczI1NiIsInJlZ2lzdHJ5IjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJhdWRpZW5jZXMiOlsiaHR0cHM6Ly9zaG9wLmV4YW1wbGUiXSwicHJpdmF0ZV9qd2siOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiI3RHQ3aDhieFdKNDREVHI4QVVqOXJKSjcxYTJMZTFTVWFHZkt0cXh0V2lZIiwieSI6InAxNGI2MlVOQncwTC1MT3BBMlZlM25QVjlHT0F1TERMYnVzZ2RyRXJoN28iLCJhbGciOiJFUzI1NiIsInVzZSI6InNpZyIsImQiOiJVVmRVeHYzRGY3eHRRSVpvdHlGazlLTEZTMXpyT1lHUlVlRDVtaUhhRFBnIn19",
+      "public_jwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "7Dt7h8bxWJ44DTr8AUj9rJJ71a2Le1SUaGfKtqxtWiY",
+        "y": "p14b62UNBw0L-LOpA2Ve3nPV9GOAuLDLbusgdrErh7o",
+        "alg": "ES256",
+        "use": "sig"
+      },
+      "headers": {
+        "Signature-Input": "sig1=(\"@method\" \"@authority\" \"@path\");created=1791700000;keyid=\"aid:v1:acme-corp:01FIXTUREES256:test\";alg=\"ecdsa-p256-sha256\";nonce=\"fixed-nonce-for-the-fixture\";tag=\"aidr\"",
+        "Signature": "sig1=:ywfIZDVN1mTMltzyOegj6yELyI664Ssmbwgl6BRmOtJ5Z0G0hUKEMszDg+EK/hui0cuj+IbRxAeLIyfbA4GaGA==:"
+      }
+    }
+  ]
+}

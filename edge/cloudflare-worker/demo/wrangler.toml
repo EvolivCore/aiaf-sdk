@@ -1,0 +1,8 @@
+# The demo's origin. No public URL: the edge (aidr-edge-demo) reaches it through a service binding.
+#   cd edge/cloudflare-worker/demo
+#   wrangler secret put AIDR_EDGE_CONTEXT_SECRET < ../edge-secret      # the same secret as the edge
+#   wrangler deploy
+name = "aidr-demo-origin"
+main = "origin.mjs"
+compatibility_date = "2025-09-01"
+workers_dev = false

@@ -1,0 +1,63 @@
+name = "aidr-edge"
+main = "src/worker.mjs"
+compatibility_date = "2025-09-01"
+
+# Route the worker in front of the protected site, e.g.:
+# routes = [{ pattern = "shop.example/*", zone_name = "shop.example" }]
+
+[vars]
+AIDR_ISSUER = "https://api.evolivcore.com"   # the registry (staging); its keys at /.well-known/
+AIDR_MIN_AGAL = "0"
+AIDR_MIN_OAL = "0"
+AIDR_MIN_KAL = "0"
+AIDR_BYPASS = '["/health", "/static/.*"]'
+# AIDR_REQUIRED_CAPABILITIES = "http.read"
+# AIDR_EXPECTED_AUDIENCE = "https://shop.example"    # default: the request's own origin
+# AIDR_ORIGIN = "https://origin.shop.example"         # default: the zone's origin
+
+# Secret, shared with the origin and never committed:
+#   openssl rand -base64 48 | wrangler secret put AIDR_EDGE_CONTEXT_SECRET
+
+[[durable_objects.bindings]]
+name = "NONCES"
+class_name = "NonceStore"
+
+[[durable_objects.bindings]]
+name = "TRUST"
+class_name = "TrustState"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["NonceStore", "TrustState"]
+
+[observability]
+enabled = true
+
+# ---- the Phase 1 demo: verified agents only, in front of demo/origin.mjs ------------------------
+#   wrangler secret put AIDR_EDGE_CONTEXT_SECRET --env demo < edge-secret
+#   wrangler deploy --env demo            →  https://aidr-edge-demo.<your-subdomain>.workers.dev
+# (demo/README.md is the whole runbook.) Bindings and vars are per environment in wrangler.
+[env.demo]
+name = "aidr-edge-demo"
+workers_dev = true
+
+[env.demo.vars]
+AIDR_ISSUER = "https://api.evolivcore.com"
+AIDR_MODE = "verified-only"
+AIDR_VERIFIED_ONLY_PATHS = '["/agents/.*"]'   # people keep "/"; agents only below /agents/
+AIDR_BYPASS = '[]'
+AIDR_MIN_AGAL = "0"                           # raise to 1 to require a domain-verified organisation
+AIDR_MIN_OAL = "0"
+AIDR_MIN_KAL = "0"
+
+[[env.demo.services]]
+binding = "ORIGIN"
+service = "aidr-demo-origin"
+
+[[env.demo.durable_objects.bindings]]
+name = "NONCES"
+class_name = "NonceStore"
+
+[[env.demo.durable_objects.bindings]]
+name = "TRUST"
+class_name = "TrustState"

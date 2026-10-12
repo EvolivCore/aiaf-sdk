@@ -1,0 +1,65 @@
+# Every verifier — Python, Node, Go and the Cloudflare Worker — must reach the same verdicts on the
+# shared vectors in sdk/testdata/, and the Node agent SDK must sign what they accept.
+name: Conformance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        verifier: [python, node, node-agent, go, worker]
+    name: ${{ matrix.verifier }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        if: matrix.verifier == 'python'
+        with:
+          python-version: "3.12"
+      - name: Python verifier and middleware
+        if: matrix.verifier == 'python'
+        env:
+          PYTHONPATH: libs:sdk/python
+        run: |
+          pip install cryptography pytest
+          python -m pytest -q tests
+
+      - uses: actions/setup-node@v4
+        if: matrix.verifier == 'node' || matrix.verifier == 'node-agent' || matrix.verifier == 'worker'
+        with:
+          node-version: "22"
+      - name: Node verifier and middleware
+        if: matrix.verifier == 'node'
+        working-directory: sdk/node
+        run: npm test
+      - name: Node agent SDK
+        if: matrix.verifier == 'node-agent'
+        working-directory: sdk/node-agent
+        run: npm test
+      - name: Cloudflare Worker
+        if: matrix.verifier == 'worker'
+        working-directory: edge/cloudflare-worker
+        run: npm test
+
+      - uses: actions/setup-go@v5
+        if: matrix.verifier == 'go'
+        with:
+          go-version: "1.23"
+      # A missing vectors file makes the suite skip, which would pass: refuse a skip here.
+      - name: Go verifier
+        if: matrix.verifier == 'go'
+        working-directory: go
+        run: |
+          set -o pipefail
+          go test -v ./... | tee test.log
+          ! grep -q -- "--- SKIP" test.log

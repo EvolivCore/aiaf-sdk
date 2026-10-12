@@ -1,0 +1,24 @@
+{
+  "note": "Bypass-rule path normalisation, shared by the Python middleware (aidr_verifier.asgi.normalise_path) and the Cloudflare edge (edge/cloudflare-worker/src/path.mjs). null means ambiguous: never bypassed, always verified.",
+  "cases": [
+    {"raw": "/health", "normalised": "/health"},
+    {"raw": "/", "normalised": "/"},
+    {"raw": "/public/../admin", "normalised": "/admin"},
+    {"raw": "/public/..%2fadmin", "normalised": "/admin"},
+    {"raw": "/public/..%2Fadmin", "normalised": "/admin"},
+    {"raw": "//public///page", "normalised": "/public/page"},
+    {"raw": "/public/page/", "normalised": "/public/page/"},
+    {"raw": "/a/./b/", "normalised": "/a/b/"},
+    {"raw": "/../..", "normalised": "/"},
+    {"raw": "/%2e%2e/%2e%2e/etc", "normalised": "/etc"},
+    {"raw": "/caf%C3%A9", "normalised": "/café"},
+    {"raw": "/public/%252e%252e/admin", "normalised": null},
+    {"raw": "/100%25", "normalised": null},
+    {"raw": "/%zz", "normalised": null},
+    {"raw": "/%C3", "normalised": null},
+    {"raw": "/public\\..\\admin", "normalised": null},
+    {"raw": "/public/%5c..%5cadmin", "normalised": null},
+    {"raw": "/public/%00", "normalised": null},
+    {"raw": "/public/%0a", "normalised": null}
+  ]
+}

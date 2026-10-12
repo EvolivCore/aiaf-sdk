@@ -1,0 +1,53 @@
+{
+  "name": "@evoliv/aidr-agent",
+  "version": "0.1.2",
+  "description": "A verifiable AIAF identity for an AI agent in one line: enroll once with a token, then sign every request to the sites it may reach. Includes a Vercel AI SDK integration.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": "./index.mjs",
+    "./ai": "./src/ai.mjs"
+  },
+  "bin": {
+    "aidr-agent": "bin/aidr-agent.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "src/",
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "peerDependencies": {
+    "ai": ">=4"
+  },
+  "peerDependenciesMeta": {
+    "ai": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "aidr",
+    "aiaf",
+    "ai-agents",
+    "agent-identity",
+    "http-signatures",
+    "rfc9421",
+    "vercel-ai-sdk"
+  ],
+  "homepage": "https://evolivcore.com/resources",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PurpleRain2025/aiaf-registry.git",
+    "directory": "sdk/node-agent"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@aidr/cloudflare-edge",
+  "version": "0.1.3",
+  "description": "AIDR agent verification at the Cloudflare edge: WebCrypto verifier, Durable Object replay protection, signed origin context.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "main": "src/worker.mjs",
+  "exports": {
+    ".": "./src/worker.mjs",
+    "./edge-context": "./src/edge-context.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
