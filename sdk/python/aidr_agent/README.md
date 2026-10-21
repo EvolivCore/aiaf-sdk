@@ -64,6 +64,28 @@ from llama_index.core.agent.workflow import FunctionAgent
 workflow = FunctionAgent(tools=aidr_http_tools(agent), llm=llm)   # the same two tools, same limits
 ```
 
+## Web Bot Auth (Cloudflare)
+
+Sites behind Cloudflare can recognise agents by [Web Bot Auth](https://developers.cloudflare.com/bots/reference/bot-verification/web-bot-auth/).
+Turn it on and every request is signed once, in that profile, which both Cloudflare and AIDR
+verifiers check:
+
+```python
+agent = Agent.load_or_enroll("research-01", web_bot_auth="https://agents.acme.example")
+# or AIDR_WEB_BOT_AUTH=https://agents.acme.example
+```
+
+1. Serve your agent's signed key directory at
+   `https://agents.acme.example/.well-known/http-message-signatures-directory`:
+   `headers, body = agent.web_bot_auth_directory("agents.acme.example")`. It expires after a day,
+   so serve a fresh one from a scheduled job.
+2. Register that URL with Cloudflare: dashboard → Bot Submission Form, verification method
+   *Request Signature*. Cloudflare recognises the agent once the submission is accepted.
+
+AIDR verifiers accept these signatures from 0.2.1 (Worker 0.1.4); earlier ones refuse them, so turn
+it on only where the sites you call are up to date. Ed25519 keys only (the one algorithm Cloudflare
+verifies).
+
 ## Command line
 
 ```

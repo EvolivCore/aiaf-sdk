@@ -246,9 +246,10 @@ func (v *Verifier) Verify(method, requestURL string, headers map[string]string,
 		url:     requestURL,
 		headers: normalised,
 		resolve: func(string) (JWK, bool) { return agentJWK, true },
-		// The signature's keyid must be the identifier the credential was issued for. Without
-		// this, a valid credential for agent A could be paired with a signature made by agent B.
-		expectedKeyID:      aid,
+		// The signature's keyid must name the credential's own key: the identifier it was issued
+		// for, or (a Web Bot Auth signature) the thumbprint of cnf.jwk. Without this, a valid
+		// credential for agent A could be paired with a signature made by agent B.
+		expectedKeyIDs:     keyIDsFor(aid, agentJWK),
 		requiredComponents: v.policy.RequiredComponents,
 		maxAge:             v.policy.MaxSignatureAge,
 		now:                now,
@@ -561,4 +562,13 @@ func stringSliceOrSingle(value any) []string {
 		return []string{text}
 	}
 	return stringSlice(value)
+}
+
+// keyIDsFor lists the keyids that name an agent's credential key: its identifier, and the JWK
+// thumbprint a Web Bot Auth signature uses.
+func keyIDsFor(aid string, jwk JWK) []string {
+	if thumbprint, err := JWKThumbprint(jwk); err == nil {
+		return []string{aid, thumbprint}
+	}
+	return []string{aid}
 }

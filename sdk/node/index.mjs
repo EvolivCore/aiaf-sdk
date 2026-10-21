@@ -43,6 +43,7 @@ export {
   SIGNATURE_HEADER,
   SIGNATURE_INPUT_HEADER,
   effectiveRequestUri,
+  jwkThumbprint,
   parseSignatureInput,
   verifyCompact,
   verifyRequestSignature,

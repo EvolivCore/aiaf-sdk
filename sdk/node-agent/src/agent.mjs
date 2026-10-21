@@ -12,6 +12,10 @@ import { DEFAULT_REGISTRY, normalizeOrigin } from './identity.mjs';
 import { EnvKeyStore, FileKeyStore } from './keystore.mjs';
 import { CredentialCache, enroll, tokenId } from './registry.mjs';
 import { CREDENTIAL_HEADER, signRequest } from './signatures.mjs';
+import { signRequest as signWebBotAuth, signedDirectory } from './webbotauth.mjs';
+
+/** The key directory URL that turns Web Bot Auth signing on (see `webBotAuth`). */
+export const WEB_BOT_AUTH_ENV = 'AIDR_WEB_BOT_AUTH';
 
 export const TOKEN_ENV = 'AIDR_ENROLLMENT_TOKEN';
 export const REGISTRY_ENV = 'AIDR_REGISTRY_URL';
@@ -27,9 +31,16 @@ export class Agent {
    * @param {'unsigned'|'refuse'} [options.onUnlisted]
    * @param {typeof fetch} [options.registryFetch]  for the registry only (a proxy, a private CA)
    * @param {() => Date} [options.clock]
+   * @param {string} [options.webBotAuth]  the https URL of the key directory this agent's operator
+   *   hosts (`webBotAuthDirectory`); default AIDR_WEB_BOT_AUTH. With it, each request is signed once
+   *   in the Web Bot Auth profile, which Web Bot Auth verifiers such as Cloudflare's edge check,
+   *   and AIDR verifiers 0.2.1 and later accept. Earlier AIDR verifiers refuse it: turn it on only
+   *   where the sites you call run 0.2.1 or later. Ed25519 keys only.
    */
-  constructor(identity, { signFor = null, onUnlisted = 'unsigned', registryFetch = fetch, clock = () => new Date() } = {}) {
+  constructor(identity, { signFor = null, onUnlisted = 'unsigned', registryFetch = fetch, clock = () => new Date(),
+    webBotAuth = process.env[WEB_BOT_AUTH_ENV] || null } = {}) {
     this.identity = identity;
+    this.webBotAuth = webBotAuth || null;
     const allowed = signFor === null ? identity.audiences : signFor.map(normalizeOrigin);
     if (identity.audiences.length && !allowed.every((o) => identity.audiences.includes(o))) {
       throw new NotAllowed(`the registry issues credentials only for ${identity.audiences.join(', ')}`);
@@ -48,13 +59,14 @@ export class Agent {
    * AIDR_ENROLLMENT_TOKEN). After that the saved identity is enough; remove the token.
    */
   static async loadOrEnroll(name, { audiences = null, token = null, registry = null, keyStore = null, description = '',
-    onUnlisted = 'unsigned', registryFetch = fetch, log = () => {}, env = process.env } = {}) {
+    onUnlisted = 'unsigned', registryFetch = fetch, log = () => {}, env = process.env,
+    webBotAuth = env[WEB_BOT_AUTH_ENV] || null } = {}) {
     const stores = keyStore ? [keyStore] : [new EnvKeyStore(undefined, env), new FileKeyStore()];
     for (const store of stores) {
       const identity = store.load(name);
       if (identity) {
         if (token || env[TOKEN_ENV]) log(`agent ${name} is already enrolled (${identity.aid}); ${TOKEN_ENV} is no longer needed`);
-        return new Agent(identity, { onUnlisted, registryFetch });
+        return new Agent(identity, { onUnlisted, registryFetch, webBotAuth });
       }
     }
     const presented = token ?? env[TOKEN_ENV];
@@ -70,7 +82,7 @@ export class Agent {
       audiences: audiences ? audiences.map(normalizeOrigin) : null });
     writable.save(identity);
     log(`enrolled ${identity.aid}`);
-    return new Agent(identity, { onUnlisted, registryFetch });
+    return new Agent(identity, { onUnlisted, registryFetch, webBotAuth });
   }
 
   shouldSign(url) {
@@ -88,7 +100,18 @@ export class Agent {
       return {};
     }
     const credential = await this.credentials.get(normalizeOrigin(url));
-    return { ...signRequest({ method, url, privateKey: this.identity.privateKey, keyid: this.identity.aid, created: this.clock() }),
-      [CREDENTIAL_HEADER]: credential };
+    const signed = this.webBotAuth
+      ? signWebBotAuth({ method, url, privateKey: this.identity.privateKey, signatureAgent: this.webBotAuth, created: this.clock() })
+      : signRequest({ method, url, privateKey: this.identity.privateKey, keyid: this.identity.aid, created: this.clock() });
+    return { ...signed, [CREDENTIAL_HEADER]: credential };
+  }
+
+  /**
+   * The signed key directory to serve at https://<authority>/.well-known/
+   * http-message-signatures-directory (and register with Cloudflare): `{ headers, body }`. It
+   * expires after a day; serve a fresh one from a scheduled job.
+   */
+  webBotAuthDirectory(authority) {
+    return signedDirectory(this.identity.privateKey, authority, { created: this.clock() });
   }
 }

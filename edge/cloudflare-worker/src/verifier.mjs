@@ -9,6 +9,7 @@
 import {
   CREDENTIAL_HEADER,
   importPublicKey,
+  jwkThumbprint,
   verifyCompact,
   verifyRequestSignature,
 } from './crypto.mjs';
@@ -171,7 +172,8 @@ export async function verifyAgent(trust, policyOverrides, { method, url, headers
     method, url, headers, now,
     resolvePublicKey: () => agentJwk,
     maxAgeSeconds: policy.maxSignatureAgeSeconds,
-    expectedKeyid: aid,
+    // The credential's own key: its identifier, or (Web Bot Auth) the thumbprint of cnf.jwk.
+    expectedKeyid: [aid, await jwkThumbprint(agentJwk)],
     // Policy is checked before the nonce is claimed, so a refused request never occupies one.
     claimNonce: claimNonce
       ? async (nonce, created) => {

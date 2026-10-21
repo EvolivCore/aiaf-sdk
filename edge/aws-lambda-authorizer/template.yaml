@@ -1,0 +1,103 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >-
+  AIDR verification for Amazon API Gateway: a Lambda REQUEST authorizer that verifies AI agents'
+  AIDR identities (the registry's credential and the agent's RFC 9421 request signature) offline.
+  Attach it to your REST or HTTP API (README.md). Apache-2.0.
+
+Metadata:
+  # The AWS Serverless Application Repository listing (sam package, then sam publish).
+  AWS::ServerlessRepo::Application:
+    Name: aidr-api-gateway-authorizer
+    Description: >-
+      Verify AI agents at API Gateway. Checks each agent's AIDR identity (registry-signed
+      credential plus RFC 9421 request signature), revocation and replay offline: no call to
+      the registry per request. People pass untouched.
+    Author: Evoliv Core
+    SpdxLicenseId: Apache-2.0
+    LicenseUrl: LICENSE
+    ReadmeUrl: README.md
+    Labels: [aidr, ai-agents, api-gateway, lambda-authorizer, bot-management, rfc9421, security, identity]
+    HomePageUrl: https://aidr.evolivcore.com
+    SemanticVersion: 0.1.0
+    SourceCodeUrl: https://github.com/EvolivCore/aiaf-sdk/tree/main/edge/aws-lambda-authorizer
+
+Parameters:
+  PublicOrigin:
+    Type: String
+    Description: Your API's origin(s) as agents call it, comma-separated (https://api.example.com)
+    AllowedPattern: "^https?://[^,\\s]+(,\\s*https?://[^,\\s]+)*$"
+  Mode:
+    Type: String
+    Default: open
+    AllowedValues: [open, verified-only]
+    Description: open lets people through and verifies agents; verified-only refuses anyone without an AIDR identity on VerifiedOnlyPaths
+  VerifiedOnlyPaths:
+    Type: String
+    Default: ""
+    Description: JSON array of path regexes verified-only applies to, e.g. ["/v1/data/.*"] (empty means every path)
+  MinAgal:
+    Type: Number
+    Default: 0
+    MinValue: 0
+    MaxValue: 3
+    Description: Minimum agent assurance level (1 = the agent's organisation verified its domain)
+  ReplayTable:
+    Type: String
+    Default: "true"
+    AllowedValues: ["true", "false"]
+    Description: Create a DynamoDB table so a signed request cannot be replayed on another Lambda instance (pay per request; pennies)
+
+Conditions:
+  WithReplayTable: !Equals [!Ref ReplayTable, "true"]
+
+Resources:
+  NonceTable:
+    Type: AWS::DynamoDB::Table
+    Condition: WithReplayTable
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions: [{ AttributeName: pk, AttributeType: S }]
+      KeySchema: [{ AttributeName: pk, KeyType: HASH }]
+      TimeToLiveSpecification: { AttributeName: ttl, Enabled: true }
+
+  AuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: AIDR agent verification (API Gateway Lambda authorizer)
+      CodeUri: .
+      Handler: index.handler
+      Runtime: nodejs22.x
+      Architectures: [arm64]
+      MemorySize: 256
+      Timeout: 10
+      Environment:
+        Variables:
+          AIDR_ISSUER: https://api.evolivcore.com
+          AIDR_PUBLIC_ORIGIN: !Ref PublicOrigin
+          AIDR_MODE: !Ref Mode
+          AIDR_VERIFIED_ONLY_PATHS: !Ref VerifiedOnlyPaths
+          AIDR_MIN_AGAL: !Ref MinAgal
+          AIDR_NONCE_TABLE: !If [WithReplayTable, !Ref NonceTable, !Ref AWS::NoValue]
+      Policies:
+        - !If
+          - WithReplayTable
+          - Statement:
+              - Effect: Allow
+                Action: dynamodb:PutItem
+                Resource: !GetAtt NonceTable.Arn
+          - !Ref AWS::NoValue
+
+  # API Gateway may call the function, from any API in this account and region.
+  InvokeFromApiGateway:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref AuthorizerFunction
+      Principal: apigateway.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+
+Outputs:
+  AuthorizerFunctionArn:
+    Description: Attach this as a REQUEST authorizer (caching off, no identity sources)
+    Value: !GetAtt AuthorizerFunction.Arn

@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"math/big"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -254,6 +255,7 @@ func verifyCompact(token string, resolve KeyResolver, expectedTyp string) (map[s
 
 type signatureEntry struct {
 	label      string
+	position   int // where it appeared in Signature-Input: header order, which a map loses
 	components []string
 	params     map[string]any
 	// Kept verbatim: re-serialising risks a canonicalisation mismatch, which would look exactly
@@ -400,7 +402,7 @@ func parseSignatureInput(headerValue string) (map[string]signatureEntry, error) 
 		}
 
 		entries[label] = signatureEntry{
-			label: label, components: components, params: params, rawValue: value,
+			label: label, position: len(entries), components: components, params: params, rawValue: value,
 		}
 	}
 
@@ -523,7 +525,67 @@ type signatureVerifyOptions struct {
 	maxAge             time.Duration
 	now                time.Time
 	nonceSeen          func(string) (bool, error)
-	expectedKeyID      string
+	// The keyids that name the credential's own key: its identifier, and the thumbprint of its
+	// cnf.jwk (a Web Bot Auth signature). Empty: any.
+	expectedKeyIDs []string
+}
+
+// chooseSignature picks the signature to verify when a request carries several (RFC 9421 allows
+// any number): the first, in header order, whose keyid is one the credential names; otherwise the
+// first in header order that has a signature value, which then fails on its keyid as it should.
+// Map order is random in Go, so header order is restored from each entry's position.
+func chooseSignature(entries map[string]signatureEntry, signatures map[string][]byte,
+	accepted []string) (signatureEntry, []byte) {
+	ordered := make([]signatureEntry, 0, len(entries))
+	for _, entry := range entries {
+		ordered = append(ordered, entry)
+	}
+	sort.Slice(ordered, func(i, j int) bool { return ordered[i].position < ordered[j].position })
+	if len(accepted) > 0 {
+		for _, entry := range ordered {
+			keyid, _ := entry.params["keyid"].(string)
+			if sig, ok := signatures[entry.label]; ok && containsString(accepted, keyid) {
+				return entry, sig
+			}
+		}
+	}
+	for _, entry := range ordered {
+		if sig, ok := signatures[entry.label]; ok {
+			return entry, sig
+		}
+	}
+	return signatureEntry{}, nil
+}
+
+func containsString(values []string, wanted string) bool {
+	for _, value := range values {
+		if value == wanted {
+			return true
+		}
+	}
+	return false
+}
+
+// JWKThumbprint is the base64url SHA-256 JWK thumbprint (RFC 7638; RFC 8037 appendix A.3 for OKP
+// keys): the keyid of a Web Bot Auth signature.
+func JWKThumbprint(jwk JWK) (string, error) {
+	var canonical string
+	switch jwk.Kty {
+	case "OKP":
+		canonical = fmt.Sprintf(`{"crv":%s,"kty":"OKP","x":%s}`, quoteJSON(jwk.Crv), quoteJSON(jwk.X))
+	case "EC":
+		canonical = fmt.Sprintf(`{"crv":%s,"kty":"EC","x":%s,"y":%s}`,
+			quoteJSON(jwk.Crv), quoteJSON(jwk.X), quoteJSON(jwk.Y))
+	default:
+		return "", newError(CodeInvalidKey, fmt.Sprintf("cannot take the thumbprint of a %q key", jwk.Kty), nil)
+	}
+	digest := sha256.Sum256([]byte(canonical))
+	return base64.RawURLEncoding.EncodeToString(digest[:]), nil
+}
+
+func quoteJSON(value string) string {
+	encoded, _ := json.Marshal(value)
+	return string(encoded)
 }
 
 // verifyRequestSignature checks an RFC 9421 signature on a received request.
@@ -552,14 +614,7 @@ func verifyRequestSignature(options signatureVerifyOptions) (VerifiedSignature, 
 		return VerifiedSignature{}, err
 	}
 
-	var entry signatureEntry
-	var signature []byte
-	for label, candidate := range entries {
-		if sig, ok := signatures[label]; ok {
-			entry, signature = candidate, sig
-			break
-		}
-	}
+	entry, signature := chooseSignature(entries, signatures, options.expectedKeyIDs)
 	if signature == nil {
 		return VerifiedSignature{}, newError(CodeMalformedToken,
 			"no Signature member matches any Signature-Input label", nil)
@@ -580,7 +635,7 @@ func verifyRequestSignature(options signatureVerifyOptions) (VerifiedSignature, 
 		return VerifiedSignature{}, newError(CodeMalformedToken,
 			"signature parameters are missing 'keyid'", nil)
 	}
-	if options.expectedKeyID != "" && keyid != options.expectedKeyID {
+	if len(options.expectedKeyIDs) > 0 && !containsString(options.expectedKeyIDs, keyid) {
 		// The credential says one identity, the signature another. Almost always an attempt to
 		// pair a stolen credential with a key the attacker actually controls.
 		return VerifiedSignature{}, newError(CodeComponentMismatch,

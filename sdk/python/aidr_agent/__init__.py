@@ -16,7 +16,7 @@ from .identity import AgentIdentity, IdentityError
 from .keystore import EnvKeyStore, FileKeyStore, KeyStore
 from .registry import RegistryError
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 __all__ = ["Agent", "AgentIdentity", "EnvKeyStore", "FileKeyStore", "IdentityError", "KeyStore",
            "NotAllowed", "RegistryError"]

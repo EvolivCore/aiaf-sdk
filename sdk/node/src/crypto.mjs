@@ -11,7 +11,7 @@
  * verify in one language and nowhere else.
  */
 
-import { createPublicKey, verify as cryptoVerify } from 'node:crypto';
+import { createHash, createPublicKey, verify as cryptoVerify } from 'node:crypto';
 
 import {
   CoveredComponentMismatch,
@@ -324,6 +324,34 @@ export function buildSignatureBase(components, signatureParams, request) {
  * That ordering is a small DoS mitigation: signature verification is the expensive step and an
  * attacker should not be able to force it by sending garbage.
  */
+/**
+ * Which signature to verify when a request carries several (RFC 9421 allows any number): the first,
+ * in header order, whose keyid is one the credential names; otherwise the first, which then fails
+ * on its keyid as it should. A signature for someone else beside it is ignored rather than
+ * mistaken for the agent's.
+ */
+function chooseLabel(entries, accepted) {
+  const labels = Object.keys(entries);
+  if (accepted) {
+    const match = labels.find((name) => accepted.includes(entries[name].params.keyid));
+    if (match) return match;
+  }
+  return labels[0];
+}
+
+/**
+ * The base64url SHA-256 JWK thumbprint (RFC 7638; RFC 8037 appendix A.3 for OKP keys): the keyid
+ * of a Web Bot Auth signature.
+ */
+export function jwkThumbprint(jwk) {
+  const members = { OKP: ['crv', 'kty', 'x'], EC: ['crv', 'kty', 'x', 'y'], RSA: ['e', 'kty', 'n'] }[jwk?.kty];
+  if (!members || members.some((name) => typeof jwk[name] !== 'string')) {
+    throw new InvalidKey(`cannot take the thumbprint of a ${jwk?.kty} key`);
+  }
+  const canonical = `{${members.map((name) => `"${name}":${JSON.stringify(jwk[name])}`).join(',')}}`;
+  return createHash('sha256').update(canonical).digest('base64url');
+}
+
 export function verifyRequestSignature({
   method,
   url,
@@ -349,7 +377,8 @@ export function verifyRequestSignature({
   const entries = parseSignatureInput(rawInput);
   const signatures = parseSignatureHeader(rawSignature);
 
-  const chosen = label || Object.keys(entries)[0];
+  const accepted = expectedKeyid === null ? null : [].concat(expectedKeyid);
+  const chosen = label || chooseLabel(entries, accepted);
   const entry = entries[chosen];
   if (!entry) throw new MalformedToken(`no Signature-Input member labelled ${chosen}`);
   const signature = signatures[chosen];
@@ -364,12 +393,12 @@ export function verifyRequestSignature({
   if (typeof keyid !== 'string' || !keyid) {
     throw new MalformedToken("signature parameters are missing 'keyid'");
   }
-  if (expectedKeyid !== null && keyid !== expectedKeyid) {
+  if (accepted !== null && !accepted.includes(keyid)) {
     // The credential says one identity, the signature another. Almost always an attempt to pair
     // a stolen credential with a key the attacker actually controls.
     throw new CoveredComponentMismatch(
       'signature keyid does not match the presented credential',
-      { signatureKeyid: keyid, credentialKeyid: expectedKeyid },
+      { signatureKeyid: keyid, credentialKeyid: accepted[0] },
     );
   }
 

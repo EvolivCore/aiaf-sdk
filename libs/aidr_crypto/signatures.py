@@ -26,7 +26,7 @@ from __future__ import annotations
 import base64
 import os
 import secrets
-from collections.abc import Callable, Iterable, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
@@ -246,6 +246,25 @@ class RequestContext:
         return {k.lower(): v for k, v in self.headers.items()}
 
 
+def _accepted_keyids(expected: str | Collection[str] | None) -> tuple[str, ...] | None:
+    if expected is None:
+        return None
+    return (expected,) if isinstance(expected, str) else tuple(expected)
+
+
+def _choose_label(entries: Mapping[str, SignatureInputEntry],
+                  accepted: tuple[str, ...] | None) -> str:
+    """Which signature to verify when a request carries several (RFC 9421 allows any number):
+    the first, in header order, whose keyid is one the credential names; otherwise the first,
+    which then fails on its keyid as it should. A signature for someone else beside it (another
+    intermediary's, say) is ignored rather than mistaken for the agent's."""
+    if accepted:
+        for name, entry in entries.items():
+            if entry.keyid in accepted:
+                return name
+    return next(iter(entries))
+
+
 def effective_request_uri(scheme: str, host_header: str, path_with_query: str) -> str:
     """Reconstruct the request URI a server actually received."""
     if not host_header:
@@ -410,7 +429,7 @@ def verify_request(
     now: datetime | None = None,
     nonce_seen: Callable[[str], bool] | None = None,
     label: str | None = None,
-    expected_keyid: str | None = None,
+    expected_keyid: str | Collection[str] | None = None,
 ) -> VerifiedSignature:
     """Verify an RFC 9421 signature on a received request.
 
@@ -434,7 +453,8 @@ def verify_request(
     entries = parse_signature_input(raw_input)
     signatures = parse_signature_header(raw_signature)
 
-    chosen = label or next(iter(entries))
+    accepted = _accepted_keyids(expected_keyid)
+    chosen = label or _choose_label(entries, accepted)
     entry = entries.get(chosen)
     if entry is None:
         raise MalformedToken(f"no Signature-Input member labelled {chosen!r}")
@@ -447,12 +467,12 @@ def verify_request(
     keyid = entry.keyid
     if not keyid:
         raise MalformedToken("signature parameters are missing 'keyid'")
-    if expected_keyid is not None and keyid != expected_keyid:
+    if accepted is not None and keyid not in accepted:
         # The credential says one identity, the signature another. Almost always an attempt to
         # pair a stolen credential with a key the attacker actually controls.
         raise CoveredComponentMismatch(
             "signature keyid does not match the presented credential",
-            signature_keyid=keyid, credential_keyid=expected_keyid,
+            signature_keyid=keyid, credential_keyid=next(iter(accepted)),
         )
 
     created = entry.created

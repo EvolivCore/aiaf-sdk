@@ -9,7 +9,7 @@
  * exactly what JOSE and RFC 9421 use.
  */
 
-import { b64urlDecode, base64Decode, utf8Decode, utf8Encode } from './encoding.mjs';
+import { b64urlDecode, b64urlEncode, base64Decode, utf8Decode, utf8Encode } from './encoding.mjs';
 import {
   CoveredComponentMismatch,
   InvalidKey,
@@ -303,6 +303,29 @@ export function buildSignatureBase(components, signatureParams, request) {
  *
  * `claimNonce(nonce, created)` resolves to `true` if this is the nonce's first use.
  */
+/**
+ * Which signature to verify when a request carries several: the first, in header order, whose
+ * keyid is one the credential names; otherwise the first, which then fails on its keyid.
+ */
+function chooseLabel(entries, accepted) {
+  const labels = Object.keys(entries);
+  if (accepted) {
+    const match = labels.find((name) => accepted.includes(entries[name].params.keyid));
+    if (match) return match;
+  }
+  return labels[0];
+}
+
+/** The base64url SHA-256 JWK thumbprint (RFC 7638; RFC 8037 A.3): a Web Bot Auth keyid. */
+export async function jwkThumbprint(jwk) {
+  const members = { OKP: ['crv', 'kty', 'x'], EC: ['crv', 'kty', 'x', 'y'], RSA: ['e', 'kty', 'n'] }[jwk?.kty];
+  if (!members || members.some((name) => typeof jwk[name] !== 'string')) {
+    throw new InvalidKey(`cannot take the thumbprint of a ${jwk?.kty} key`);
+  }
+  const canonical = `{${members.map((name) => `"${name}":${JSON.stringify(jwk[name])}`).join(',')}}`;
+  return b64urlEncode(new Uint8Array(await crypto.subtle.digest('SHA-256', utf8Encode(canonical))));
+}
+
 export async function verifyRequestSignature({
   method,
   url,
@@ -325,7 +348,8 @@ export async function verifyRequestSignature({
 
   const entries = parseSignatureInput(rawInput);
   const signatures = parseSignatureHeader(rawSignature);
-  const chosen = Object.keys(entries)[0];
+  const accepted = expectedKeyid === null ? null : [].concat(expectedKeyid);
+  const chosen = chooseLabel(entries, accepted);
   const entry = entries[chosen];
   const signature = signatures[chosen];
   if (!signature) throw new MalformedToken(`no Signature member labelled ${chosen}`);
@@ -339,7 +363,7 @@ export async function verifyRequestSignature({
   if (typeof keyid !== 'string' || !keyid) {
     throw new MalformedToken("signature parameters are missing 'keyid'");
   }
-  if (expectedKeyid !== null && keyid !== expectedKeyid) {
+  if (accepted !== null && !accepted.includes(keyid)) {
     throw new CoveredComponentMismatch('signature keyid does not match the presented credential');
   }
 

@@ -553,9 +553,11 @@ An agent signs each request per RFC 9421. Conforming signatures:
   `@method` a `GET` signature replays as a `DELETE`; without `@authority` it replays against
   another site; without `@path` against another endpoint on the same site.
 - **MUST** carry `created`, and **MUST** carry `nonce` where the RP performs replay detection.
-- **MUST** carry `keyid` equal to the agent identifier the credential was issued for. An RP
-  **MUST** reject a mismatch, which is otherwise the route to pairing a stolen credential with an
-  attacker's key.
+- **MUST** carry `keyid` naming the key the credential was issued for: either the agent identifier
+  the credential was issued for, or (the Web Bot Auth profile, §6.1.1) the JWK SHA-256 thumbprint
+  of the credential's `cnf.jwk`. An RP **MUST** reject any other keyid, which is otherwise the route
+  to pairing a stolen credential with an attacker's key. Either way the key that verifies is
+  `cnf.jwk`.
 - **MUST** use an algorithm from the registry in §17.3.
 - **SHOULD** be rejected by an RP if older than 300 seconds.
 
@@ -565,6 +567,43 @@ Host: shop.example
 Signature-Input: sig1=("@method" "@authority" "@path");created=1790243730;\
   keyid="aid:v1:acme-corp:01J8Z…";alg="ed25519";nonce="k9Xr…";tag="aiaf"
 Signature: sig1=:MEUCIQD…:
+Agent-Credential: eyJhbGciOiJFZERTQSIsInR5cCI6…
+```
+
+When a request carries more than one signature (RFC 9421 allows several), an RP verifies the
+first, in header order, whose `keyid` names the credential's key, and ignores the others; if none
+does, the first, which then fails on its keyid.
+
+#### 6.1.1 The Web Bot Auth profile
+
+So that verifiers which know Web Bot Auth and not AIAF (Cloudflare's edge, for one) can verify an
+AIAF agent too, an agent **MAY** sign each request once in the Web Bot Auth profile instead
+(draft-meunier-webbotauth-httpsig-protocol, as Cloudflare implements it, 2026-10):
+
+- `keyid` is the base64url JWK SHA-256 thumbprint of the agent's key (RFC 7638; RFC 8037
+  appendix A.3 for Ed25519), and `tag` is `web-bot-auth`;
+- `Signature-Agent` names, as a bare quoted string, the https origin whose
+  `/.well-known/http-message-signatures-directory` publishes the key. The directory response is
+  signed by the key it lists (`tag="http-message-signatures-directory"`, covering `@authority;req`).
+  The draft asks for the dictionary form of `Signature-Agent`; Cloudflare rejects it and the draft
+  lets verifiers accept the string, so the string is what works everywhere today;
+- covered components: `@authority`, `@method`, `@path` and `signature-agent` (without a `key`
+  parameter, which Cloudflare does not support); `created`, `expires`, `alg="ed25519"`, `nonce`;
+- Ed25519 only, the one algorithm Cloudflare verifies.
+
+The rules above still apply: the three request components are covered, the signature is no
+older than 300 seconds, the nonce is single-use, and the credential's key verifies it. AIAF
+verifiers accept this profile from SDK 0.2.1 (Python, Node.js, Go) and Worker 0.1.4; earlier ones
+refuse it, so agents turn it on deliberately.
+
+```http
+GET /api/products HTTP/1.1
+Host: shop.example
+Signature-Agent: "https://agents.acme.example"
+Signature-Input: wba=("@authority" "@method" "@path" "signature-agent");created=1790243730;\
+  expires=1790244030;keyid="poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U";alg="ed25519";\
+  nonce="XeP7…";tag="web-bot-auth"
+Signature: wba=:DGiW…:
 Agent-Credential: eyJhbGciOiJFZERTQSIsInR5cCI6…
 ```
 

@@ -1,0 +1,16 @@
+{
+  "name": "@evoliv/aidr-lambda-authorizer",
+  "version": "0.1.0",
+  "description": "AIDR verification for Amazon API Gateway: a Lambda REQUEST authorizer (REST and HTTP APIs).",
+  "type": "module",
+  "main": "index.mjs",
+  "license": "Apache-2.0",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@evoliv/aidr-verifier": "^0.2.1"
+  },
+  "keywords": ["aidr", "aiaf", "ai-agents", "api-gateway", "lambda-authorizer", "rfc9421"]
+}

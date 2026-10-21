@@ -545,6 +545,296 @@
           ]
         }
       ]
+    },
+    {
+      "algorithm": "Ed25519",
+      "profile": "web-bot-auth",
+      "signature_agent": "https://agents.aidr.example",
+      "issuer": "https://registry.aidr.example",
+      "jwks": {
+        "keys": [
+          {
+            "kty": "OKP",
+            "crv": "Ed25519",
+            "x": "dlDoEyQd4w4fAI_MhWfMvWEE9fYcGqLStQUYJQqYmtU",
+            "alg": "EdDSA",
+            "use": "sig",
+            "kid": "key_2r60JGcs_gPFP2qJjlpady"
+          }
+        ]
+      },
+      "aid": "aid:v1:acme-corp:01M3YA0BCRQ725ZN860MZKGC8Q:2d8g",
+      "organization": "acme-corp",
+      "expected_assurance": 1,
+      "expected_agal": 1,
+      "expected_oal": 2,
+      "expected_kal": 1,
+      "expected_capabilities": [
+        "http.read",
+        "form.submit"
+      ],
+      "site_url": "https://shop.example/api/products",
+      "credential_expires_at": "2026-10-02T12:54:11+00:00",
+      "revocation": {
+        "delta_before_revocation": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmwrand0In0.eyJjb21wbGV0ZSI6dHJ1ZSwiZXhwIjoxNzkwOTQ0ODExLCJpYXQiOjE3OTA5NDQ3NTEsImlzcyI6Imh0dHBzOi8vcmVnaXN0cnkuYWlkci5leGFtcGxlIiwicmV2b2NhdGlvbnMiOltdLCJzZXJpYWwiOjAsInNpbmNlIjowLCJ0eXAiOiJyZXZvY2F0aW9uLWRlbHRhIn0.HjA4D5M-x9QJFRM0LoDOIUHAcPE_pk94XvCm4EXp38DvPPe6G9BlohFCDOwbEyVwXyRA3wGRJQNOFK-XkFpRBg",
+        "delta_with_gap": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmwrand0In0.eyJjb21wbGV0ZSI6dHJ1ZSwiZXhwIjoxNzkwOTQ0ODExLCJpYXQiOjE3OTA5NDQ3NTEsImlzcyI6Imh0dHBzOi8vcmVnaXN0cnkuYWlkci5leGFtcGxlIiwicmV2b2NhdGlvbnMiOltdLCJzZXJpYWwiOjAsInNpbmNlIjo1MCwidHlwIjoicmV2b2NhdGlvbi1kZWx0YSJ9.VfftmkoYHsTN9XQ1K9gUm4smzOSHFxTQmPYGEmyUBo_WmnS2LVClGe5Dq1O9srrHiVNf14q6OOvj9BjV3fO5Ag",
+        "delta_after_revocation": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmwrand0In0.eyJjb21wbGV0ZSI6dHJ1ZSwiZXhwIjoxNzkwOTQ0ODExLCJpYXQiOjE3OTA5NDQ3NTEsImlzcyI6Imh0dHBzOi8vcmVnaXN0cnkuYWlkci5leGFtcGxlIiwicmV2b2NhdGlvbnMiOlt7InJlYXNvbiI6Im93bmVyX3JlcXVlc3QiLCJyZXZva2VkX2F0IjoiMjAyNi0xMC0wMlQxMjozOToxMVoiLCJzZXJpYWwiOjEsInN1YmplY3RfaWQiOiJhaWQ6djE6YWNtZS1jb3JwOjAxTTNZQTBCQ1JRNzI1Wk44NjBNWktHQzhROjJkOGciLCJzdWJqZWN0X3R5cGUiOiJhZ2VudCJ9XSwic2VyaWFsIjoxLCJzaW5jZSI6MCwidHlwIjoicmV2b2NhdGlvbi1kZWx0YSJ9.Tc1PzFwUE8zWSDWXpJrNR-Ybdj-nAqxDqI8_Dx09aPXG3laSEtZ7kW2iIPNYaJBVHBBZcBHlk-kaiP9YSkYLAQ",
+        "filter_after_revocation": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmwtZmlsdGVyK2p3dCJ9.eyJleHAiOjE3OTA5NDQ4NzEsImZpbHRlciI6eyJiaXRzIjoieEVTQSIsImNvdW50IjoxLCJmb3JtYXQiOjEsImsiOjgsIm0iOjI0fSwiaWF0IjoxNzkwOTQ0NzUxLCJpc3MiOiJodHRwczovL3JlZ2lzdHJ5LmFpZHIuZXhhbXBsZSIsInNlcmlhbCI6MSwidHlwIjoicmV2b2NhdGlvbi1maWx0ZXIifQ.lHp0kEx_cOxUjv3NTU864kYtr-lltvFSwCcfIa_MZEjbC_FgQgb6MzMHMj1ux6xplIqzLrgnYVtTGfEXlXC9CQ",
+        "filter_absent_probe": "aid:v1:acme-corp:NEVER-ISSUED:0000",
+        "serial_after": 1
+      },
+      "cases": [
+        {
+          "name": "valid request verifies",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"XOyPfRCn0wf+iW4Tis8rkHKdmcFZvk+tHli5Fr+jKJWJEnXstA3kezn6PYPjrz1G7qh+4yzeUkRjR1SO/9Ky3A==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:LKfoHNbxa73IIz3jinAv3SMqyeY750Cq5Nvgn0gF/BWr1UjAhy2o7jCYMk6YiiCuYuqnSC0ISJjB5omn0DmEDw==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDU2NTEsImlhdCI6MTc5MDk0NDc1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSUUFLMFFTRFgwUlhWU1FQNCIsImthbCI6MSwibmJmIjoxNzkwOTQ0NzUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.aMPmlrhmWTuBGtk__jZmweHbIROntGMdTdADCosWtPcWrW9wed_NO8_X5tgCo2SOmq4ZnwDnaSkL1C_lzCTNAw"
+          },
+          "expect": "allow"
+        },
+        {
+          "name": "replay from another host is refused",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"BNK63tCKePD/XWdHqhKeLlETqsfvC7IZRvQE4ijU0vZ1EN5RhMpnNt4ZagRX/2lQijGxfNRLMCzmwJpn2FcsvA==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:N4tnQzHsoOoRBwwT3L0hvdStux6OI/YpR9KumGkgmDjo8C01yjLFKjmf3LNg9ek/DloWX+tmF6T2w3WKT8XLCQ==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDU2NTEsImlhdCI6MTc5MDk0NDc1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSUUFLMFFTRFgwUlhWU1FQNCIsImthbCI6MSwibmJmIjoxNzkwOTQ0NzUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.aMPmlrhmWTuBGtk__jZmweHbIROntGMdTdADCosWtPcWrW9wed_NO8_X5tgCo2SOmq4ZnwDnaSkL1C_lzCTNAw"
+          },
+          "expect": "deny",
+          "expect_code": "aidr.crypto.signature_invalid"
+        },
+        {
+          "name": "verb substitution is refused",
+          "method": "DELETE",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"XOyPfRCn0wf+iW4Tis8rkHKdmcFZvk+tHli5Fr+jKJWJEnXstA3kezn6PYPjrz1G7qh+4yzeUkRjR1SO/9Ky3A==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:LKfoHNbxa73IIz3jinAv3SMqyeY750Cq5Nvgn0gF/BWr1UjAhy2o7jCYMk6YiiCuYuqnSC0ISJjB5omn0DmEDw==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDU2NTEsImlhdCI6MTc5MDk0NDc1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSUUFLMFFTRFgwUlhWU1FQNCIsImthbCI6MSwibmJmIjoxNzkwOTQ0NzUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.aMPmlrhmWTuBGtk__jZmweHbIROntGMdTdADCosWtPcWrW9wed_NO8_X5tgCo2SOmq4ZnwDnaSkL1C_lzCTNAw"
+          },
+          "expect": "deny",
+          "expect_code": "aidr.crypto.signature_invalid"
+        },
+        {
+          "name": "path substitution is refused",
+          "method": "GET",
+          "url": "https://shop.example/admin/delete",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"XOyPfRCn0wf+iW4Tis8rkHKdmcFZvk+tHli5Fr+jKJWJEnXstA3kezn6PYPjrz1G7qh+4yzeUkRjR1SO/9Ky3A==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:LKfoHNbxa73IIz3jinAv3SMqyeY750Cq5Nvgn0gF/BWr1UjAhy2o7jCYMk6YiiCuYuqnSC0ISJjB5omn0DmEDw==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDU2NTEsImlhdCI6MTc5MDk0NDc1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSUUFLMFFTRFgwUlhWU1FQNCIsImthbCI6MSwibmJmIjoxNzkwOTQ0NzUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.aMPmlrhmWTuBGtk__jZmweHbIROntGMdTdADCosWtPcWrW9wed_NO8_X5tgCo2SOmq4ZnwDnaSkL1C_lzCTNAw"
+          },
+          "expect": "deny",
+          "expect_code": "aidr.crypto.signature_invalid"
+        },
+        {
+          "name": "stolen credential with the attacker's own key is refused",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"6YU4Zrg3Mz21JUI4-Nbs593cjTMk3TDVpNa7J1M9nB4\";alg=\"ed25519\";nonce=\"pkG+0qXHGMcSqYngo2gjaUkHPgzTNBXxKIRq21Uu6fzQVsnuMkdcukCO9a0/oEV8HH+vMvRc5M1E5+Sk5LbXAA==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:k5hbRZnxGy8tm+GqAEsj6nYSq5z+n/BPaHfDeXQPlXd45vZjBbUpzAkk5lS2b+td1CjRWZIARlHsrKn8Tl5ODw==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDU2NTEsImlhdCI6MTc5MDk0NDc1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSUUFLMFFTRFgwUlhWU1FQNCIsImthbCI6MSwibmJmIjoxNzkwOTQ0NzUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.aMPmlrhmWTuBGtk__jZmweHbIROntGMdTdADCosWtPcWrW9wed_NO8_X5tgCo2SOmq4ZnwDnaSkL1C_lzCTNAw"
+          },
+          "expect": "deny",
+          "expect_code": "aidr.verify.covered_component_mismatch"
+        },
+        {
+          "name": "tampered signature is refused",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"XOyPfRCn0wf+iW4Tis8rkHKdmcFZvk+tHli5Fr+jKJWJEnXstA3kezn6PYPjrz1G7qh+4yzeUkRjR1SO/9Ky3A==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:LKfoHNbxa73IIz3jinAv3SMqyeY750Cq5Nvgn0gF/BWr1UjAhy2o7jCYMk6YiiCuYuqnSC0ISJjB5omn0DmEAAAA:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDU2NTEsImlhdCI6MTc5MDk0NDc1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSUUFLMFFTRFgwUlhWU1FQNCIsImthbCI6MSwibmJmIjoxNzkwOTQ0NzUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.aMPmlrhmWTuBGtk__jZmweHbIROntGMdTdADCosWtPcWrW9wed_NO8_X5tgCo2SOmq4ZnwDnaSkL1C_lzCTNAw"
+          },
+          "expect": "deny"
+        },
+        {
+          "name": "credential with no request signature is refused",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDU2NTEsImlhdCI6MTc5MDk0NDc1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSUUFLMFFTRFgwUlhWU1FQNCIsImthbCI6MSwibmJmIjoxNzkwOTQ0NzUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.aMPmlrhmWTuBGtk__jZmweHbIROntGMdTdADCosWtPcWrW9wed_NO8_X5tgCo2SOmq4ZnwDnaSkL1C_lzCTNAw"
+          },
+          "expect": "deny",
+          "expect_code": "aidr.crypto.malformed_token"
+        },
+        {
+          "name": "request with no credential is refused",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"XOyPfRCn0wf+iW4Tis8rkHKdmcFZvk+tHli5Fr+jKJWJEnXstA3kezn6PYPjrz1G7qh+4yzeUkRjR1SO/9Ky3A==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:LKfoHNbxa73IIz3jinAv3SMqyeY750Cq5Nvgn0gF/BWr1UjAhy2o7jCYMk6YiiCuYuqnSC0ISJjB5omn0DmEDw==:"
+          },
+          "expect": "deny",
+          "expect_code": "aidr.crypto.malformed_token"
+        },
+        {
+          "name": "expired credential is refused",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"SDyggzG6xMqJnOxXFKjXyxKN0BW5pUK6aBjeXW+9rQnde5bViKwKzAm2tfurF1Ii8tA7uOHGgGbRMo4Jh5spqw==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:wpRaGJiChJosFZmLgKNbeN1Hqnp1vid60aIK6cXUCiZO0ye4KWxBMoZOMMjcqm3jbB+3qU+ZkshWkLDxliEBBQ==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDExNTIsImlhdCI6MTc5MDk0MTE1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSWTBCMkE4TTRDRDFINVg4UiIsImthbCI6MSwibmJmIjoxNzkwOTQxMTUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.tVkCRrqiq9RXMB7PlNBanArZorDtnxzy0_ym2QgYz9IcE3k0Os1epoW3DgobpkVvJqMan7y5UCy2ETQqiU8TDg"
+          },
+          "expect": "deny",
+          "expect_code": "aidr.verify.credential_expired"
+        },
+        {
+          "name": "audience-bound credential verifies at its own site",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"XlkyiWn8Wt8S1uq7Q5TLJdLA68CmRblGvO8F9jedWAlVu/jpJ19BBY8Kr2ZcxgGUoCUVrokeI9PN9xA/qpWeOw==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:Dm/mh4UDJdlJ/SDVioWVCa1tD961IsCUWdBtMRdGRjl/PIj4LE2vVXbFsOuEEkIgiJHZ5siJSEWmD9x8rBzoDQ==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImF1ZCI6Imh0dHBzOi8vc2hvcC5leGFtcGxlIiwiY2FwYWJpbGl0aWVzIjpbImh0dHAucmVhZCIsImZvcm0uc3VibWl0Il0sImNuZiI6eyJqd2siOnsiYWxnIjoiRWREU0EiLCJjcnYiOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwidXNlIjoic2lnIiwieCI6ImJkcXZTNldYTENydXE4SF9RRUwyWjVRVWltUWwxeFB6ZkI0M1RLZXJaVGcifSwia2lkIjoia2V5X0hHTjdHQVZkN2U3ZzlEdFRCM0lUMWcifSwiZGFsIjowLCJkZWNsYXJlZCI6eyJhY3RzX29uX2JlaGFsZl9vZiI6Im9yZ2FuaXphdGlvbiIsImFnZW50X3R5cGUiOiJhdXRvbm9tb3VzIiwiYXV0b25vbXlfbGV2ZWwiOiJzdXBlcnZpc2VkIiwiY29udGFjdF9mb3JfYWJ1c2UiOm51bGwsImh1bWFuX292ZXJzaWdodCI6dHJ1ZSwibW9kZWxfZmFtaWx5IjoiY3VzdG9tLWxsbSIsIm1vZGVsX3ZlcnNpb24iOiIyLjEuMCIsInB1cnBvc2VzIjpbXSwicmVzcGVjdHNfcm9ib3RzX3R4dCI6dHJ1ZX0sImV4cCI6MTc5MDk0NTY1MSwiaWF0IjoxNzkwOTQ0NzUxLCJpc3MiOiJodHRwczovL3JlZ2lzdHJ5LmFpZHIuZXhhbXBsZSIsImp0aSI6IjAxTTNZQTBCQ1I3Vk5LSEQyTVMwWjFaMzlIIiwia2FsIjoxLCJuYmYiOjE3OTA5NDQ3NTEsIm9hbCI6Miwib3JnIjoiYWNtZS1jb3JwIiwib3JnX2RvbWFpbnMiOltdLCJzY29wZXMiOltdLCJzdGFuZGluZyI6eyJhYnVzZV9yZXBvcnRzX3VwaGVsZCI6MCwic3VzcGVuc2lvbnMiOjB9LCJzdWIiOiJhaWQ6djE6YWNtZS1jb3JwOjAxTTNZQTBCQ1JRNzI1Wk44NjBNWktHQzhROjJkOGcifQ.BOVPI77sZAiFmDZZRNO_ZR70KjIt0ktYo8z3YUun7VUs9cAEb2aHwLpenyNheO0k-9skmL8FC6tzJs6sA-r3DQ"
+          },
+          "expect": "allow",
+          "expected_audience": "https://shop.example"
+        },
+        {
+          "name": "audience-bound credential is refused elsewhere",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"XlkyiWn8Wt8S1uq7Q5TLJdLA68CmRblGvO8F9jedWAlVu/jpJ19BBY8Kr2ZcxgGUoCUVrokeI9PN9xA/qpWeOw==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:Dm/mh4UDJdlJ/SDVioWVCa1tD961IsCUWdBtMRdGRjl/PIj4LE2vVXbFsOuEEkIgiJHZ5siJSEWmD9x8rBzoDQ==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImF1ZCI6Imh0dHBzOi8vc2hvcC5leGFtcGxlIiwiY2FwYWJpbGl0aWVzIjpbImh0dHAucmVhZCIsImZvcm0uc3VibWl0Il0sImNuZiI6eyJqd2siOnsiYWxnIjoiRWREU0EiLCJjcnYiOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwidXNlIjoic2lnIiwieCI6ImJkcXZTNldYTENydXE4SF9RRUwyWjVRVWltUWwxeFB6ZkI0M1RLZXJaVGcifSwia2lkIjoia2V5X0hHTjdHQVZkN2U3ZzlEdFRCM0lUMWcifSwiZGFsIjowLCJkZWNsYXJlZCI6eyJhY3RzX29uX2JlaGFsZl9vZiI6Im9yZ2FuaXphdGlvbiIsImFnZW50X3R5cGUiOiJhdXRvbm9tb3VzIiwiYXV0b25vbXlfbGV2ZWwiOiJzdXBlcnZpc2VkIiwiY29udGFjdF9mb3JfYWJ1c2UiOm51bGwsImh1bWFuX292ZXJzaWdodCI6dHJ1ZSwibW9kZWxfZmFtaWx5IjoiY3VzdG9tLWxsbSIsIm1vZGVsX3ZlcnNpb24iOiIyLjEuMCIsInB1cnBvc2VzIjpbXSwicmVzcGVjdHNfcm9ib3RzX3R4dCI6dHJ1ZX0sImV4cCI6MTc5MDk0NTY1MSwiaWF0IjoxNzkwOTQ0NzUxLCJpc3MiOiJodHRwczovL3JlZ2lzdHJ5LmFpZHIuZXhhbXBsZSIsImp0aSI6IjAxTTNZQTBCQ1I3Vk5LSEQyTVMwWjFaMzlIIiwia2FsIjoxLCJuYmYiOjE3OTA5NDQ3NTEsIm9hbCI6Miwib3JnIjoiYWNtZS1jb3JwIiwib3JnX2RvbWFpbnMiOltdLCJzY29wZXMiOltdLCJzdGFuZGluZyI6eyJhYnVzZV9yZXBvcnRzX3VwaGVsZCI6MCwic3VzcGVuc2lvbnMiOjB9LCJzdWIiOiJhaWQ6djE6YWNtZS1jb3JwOjAxTTNZQTBCQ1JRNzI1Wk44NjBNWktHQzhROjJkOGcifQ.BOVPI77sZAiFmDZZRNO_ZR70KjIt0ktYo8z3YUun7VUs9cAEb2aHwLpenyNheO0k-9skmL8FC6tzJs6sA-r3DQ"
+          },
+          "expect": "deny",
+          "expected_audience": "https://bank.example",
+          "expect_code": "aidr.registry.policy_violation"
+        },
+        {
+          "name": "audience-bound credential verifies at the site being visited",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"XlkyiWn8Wt8S1uq7Q5TLJdLA68CmRblGvO8F9jedWAlVu/jpJ19BBY8Kr2ZcxgGUoCUVrokeI9PN9xA/qpWeOw==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:Dm/mh4UDJdlJ/SDVioWVCa1tD961IsCUWdBtMRdGRjl/PIj4LE2vVXbFsOuEEkIgiJHZ5siJSEWmD9x8rBzoDQ==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImF1ZCI6Imh0dHBzOi8vc2hvcC5leGFtcGxlIiwiY2FwYWJpbGl0aWVzIjpbImh0dHAucmVhZCIsImZvcm0uc3VibWl0Il0sImNuZiI6eyJqd2siOnsiYWxnIjoiRWREU0EiLCJjcnYiOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwidXNlIjoic2lnIiwieCI6ImJkcXZTNldYTENydXE4SF9RRUwyWjVRVWltUWwxeFB6ZkI0M1RLZXJaVGcifSwia2lkIjoia2V5X0hHTjdHQVZkN2U3ZzlEdFRCM0lUMWcifSwiZGFsIjowLCJkZWNsYXJlZCI6eyJhY3RzX29uX2JlaGFsZl9vZiI6Im9yZ2FuaXphdGlvbiIsImFnZW50X3R5cGUiOiJhdXRvbm9tb3VzIiwiYXV0b25vbXlfbGV2ZWwiOiJzdXBlcnZpc2VkIiwiY29udGFjdF9mb3JfYWJ1c2UiOm51bGwsImh1bWFuX292ZXJzaWdodCI6dHJ1ZSwibW9kZWxfZmFtaWx5IjoiY3VzdG9tLWxsbSIsIm1vZGVsX3ZlcnNpb24iOiIyLjEuMCIsInB1cnBvc2VzIjpbXSwicmVzcGVjdHNfcm9ib3RzX3R4dCI6dHJ1ZX0sImV4cCI6MTc5MDk0NTY1MSwiaWF0IjoxNzkwOTQ0NzUxLCJpc3MiOiJodHRwczovL3JlZ2lzdHJ5LmFpZHIuZXhhbXBsZSIsImp0aSI6IjAxTTNZQTBCQ1I3Vk5LSEQyTVMwWjFaMzlIIiwia2FsIjoxLCJuYmYiOjE3OTA5NDQ3NTEsIm9hbCI6Miwib3JnIjoiYWNtZS1jb3JwIiwib3JnX2RvbWFpbnMiOltdLCJzY29wZXMiOltdLCJzdGFuZGluZyI6eyJhYnVzZV9yZXBvcnRzX3VwaGVsZCI6MCwic3VzcGVuc2lvbnMiOjB9LCJzdWIiOiJhaWQ6djE6YWNtZS1jb3JwOjAxTTNZQTBCQ1JRNzI1Wk44NjBNWktHQzhROjJkOGcifQ.BOVPI77sZAiFmDZZRNO_ZR70KjIt0ktYo8z3YUun7VUs9cAEb2aHwLpenyNheO0k-9skmL8FC6tzJs6sA-r3DQ"
+          },
+          "expect": "allow"
+        },
+        {
+          "name": "audience-bound credential is refused at another site being visited",
+          "method": "GET",
+          "url": "https://bank.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"EcECKUUiNqYsn7ZF3RPvoThpdacmqt8vvySQUEDHmrNu8EvcVgzlKHD2lkTvJOmH5o0ktTyOckFsjCZB7C/rCg==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:/qNaYTFCagPq+y2zUrrtnDFW/aOrLeyz9rjMUuzcH2VFgVDSrklfD09N4OfajiDnwmMgp1TyViTS1QRLyHCuCw==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImF1ZCI6Imh0dHBzOi8vc2hvcC5leGFtcGxlIiwiY2FwYWJpbGl0aWVzIjpbImh0dHAucmVhZCIsImZvcm0uc3VibWl0Il0sImNuZiI6eyJqd2siOnsiYWxnIjoiRWREU0EiLCJjcnYiOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwidXNlIjoic2lnIiwieCI6ImJkcXZTNldYTENydXE4SF9RRUwyWjVRVWltUWwxeFB6ZkI0M1RLZXJaVGcifSwia2lkIjoia2V5X0hHTjdHQVZkN2U3ZzlEdFRCM0lUMWcifSwiZGFsIjowLCJkZWNsYXJlZCI6eyJhY3RzX29uX2JlaGFsZl9vZiI6Im9yZ2FuaXphdGlvbiIsImFnZW50X3R5cGUiOiJhdXRvbm9tb3VzIiwiYXV0b25vbXlfbGV2ZWwiOiJzdXBlcnZpc2VkIiwiY29udGFjdF9mb3JfYWJ1c2UiOm51bGwsImh1bWFuX292ZXJzaWdodCI6dHJ1ZSwibW9kZWxfZmFtaWx5IjoiY3VzdG9tLWxsbSIsIm1vZGVsX3ZlcnNpb24iOiIyLjEuMCIsInB1cnBvc2VzIjpbXSwicmVzcGVjdHNfcm9ib3RzX3R4dCI6dHJ1ZX0sImV4cCI6MTc5MDk0NTY1MSwiaWF0IjoxNzkwOTQ0NzUxLCJpc3MiOiJodHRwczovL3JlZ2lzdHJ5LmFpZHIuZXhhbXBsZSIsImp0aSI6IjAxTTNZQTBCQ1I3Vk5LSEQyTVMwWjFaMzlIIiwia2FsIjoxLCJuYmYiOjE3OTA5NDQ3NTEsIm9hbCI6Miwib3JnIjoiYWNtZS1jb3JwIiwib3JnX2RvbWFpbnMiOltdLCJzY29wZXMiOltdLCJzdGFuZGluZyI6eyJhYnVzZV9yZXBvcnRzX3VwaGVsZCI6MCwic3VzcGVuc2lvbnMiOjB9LCJzdWIiOiJhaWQ6djE6YWNtZS1jb3JwOjAxTTNZQTBCQ1JRNzI1Wk44NjBNWktHQzhROjJkOGcifQ.BOVPI77sZAiFmDZZRNO_ZR70KjIt0ktYo8z3YUun7VUs9cAEb2aHwLpenyNheO0k-9skmL8FC6tzJs6sA-r3DQ"
+          },
+          "expect": "deny",
+          "expect_code": "aidr.registry.policy_violation"
+        },
+        {
+          "name": "an AgAL floor the agent meets admits it",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"XOyPfRCn0wf+iW4Tis8rkHKdmcFZvk+tHli5Fr+jKJWJEnXstA3kezn6PYPjrz1G7qh+4yzeUkRjR1SO/9Ky3A==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:LKfoHNbxa73IIz3jinAv3SMqyeY750Cq5Nvgn0gF/BWr1UjAhy2o7jCYMk6YiiCuYuqnSC0ISJjB5omn0DmEDw==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDU2NTEsImlhdCI6MTc5MDk0NDc1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSUUFLMFFTRFgwUlhWU1FQNCIsImthbCI6MSwibmJmIjoxNzkwOTQ0NzUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.aMPmlrhmWTuBGtk__jZmweHbIROntGMdTdADCosWtPcWrW9wed_NO8_X5tgCo2SOmq4ZnwDnaSkL1C_lzCTNAw"
+          },
+          "min_assurance": 1,
+          "expect": "allow"
+        },
+        {
+          "name": "the legacy assurance claim never satisfies an AgAL floor",
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790944751;expires=1790945051;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"XOyPfRCn0wf+iW4Tis8rkHKdmcFZvk+tHli5Fr+jKJWJEnXstA3kezn6PYPjrz1G7qh+4yzeUkRjR1SO/9Ky3A==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:LKfoHNbxa73IIz3jinAv3SMqyeY750Cq5Nvgn0gF/BWr1UjAhy2o7jCYMk6YiiCuYuqnSC0ISJjB5omn0DmEDw==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDU2NTEsImlhdCI6MTc5MDk0NDc1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSUUFLMFFTRFgwUlhWU1FQNCIsImthbCI6MSwibmJmIjoxNzkwOTQ0NzUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.aMPmlrhmWTuBGtk__jZmweHbIROntGMdTdADCosWtPcWrW9wed_NO8_X5tgCo2SOmq4ZnwDnaSkL1C_lzCTNAw"
+          },
+          "min_assurance": 2,
+          "expect": "deny",
+          "expect_code": "aidr.verify.assurance_too_low"
+        }
+      ],
+      "max_revocation_age_seconds": 660,
+      "freshness_cases": [
+        {
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790945351;expires=1790945651;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"C/3e9EzZHDIzjNe76yKp3L74fuhTLk3hnzPmjfkhMpIbsQC5Y0IjFDNT1gL1rFva6ccaUK0cJSaV/YXSmT+DyQ==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:BwpyR1SU/hrS1s5HEmQAMdDQp8cjWtxp4I6YdOGCf/1Oi33pqklustuYJW0MuJVsqbVdLhalSPp2N/cTY7PlAw==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDYyNTEsImlhdCI6MTc5MDk0NTM1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSRlY4RVhKRTBZQVNFVjJESyIsImthbCI6MSwibmJmIjoxNzkwOTQ1MzUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.ULoQQjpgatBZTaE28yLWE7C1Um_a_tjT5saunNnwwLab6Ib91MeRRG3N2r4VGgZhbhCJrfFiGXv3mslKREe_CA"
+          },
+          "evaluate_at": 1790945351,
+          "expect": "allow",
+          "name": "revocation data 600 s old is still relied on"
+        },
+        {
+          "method": "GET",
+          "url": "https://shop.example/api/products",
+          "headers": {
+            "Signature-Agent": "\"https://agents.aidr.example\"",
+            "Signature-Input": "wba=(\"@authority\" \"@method\" \"@path\" \"signature-agent\");created=1790945451;expires=1790945751;keyid=\"HGN7GAVd7e7g9DtTB3IT1grgNofq4Zl2jhulWmNU-Y8\";alg=\"ed25519\";nonce=\"CngFZclTJJRTFlVv0DcXJmu9odOLtjvUJAbDG/HifF8OrwozP6GAbBF4dRkMSeNgleV1TD9X3N0KDdaOxgkbbQ==\";tag=\"web-bot-auth\"",
+            "Signature": "wba=:oTcEGduZSgIo/d9iPjD3WgWpQbRv9sPDWpU87YtclbOsZh3g16I+pwHY5eHIikBL4/yj+p23NizJmLxdFoeiCg==:",
+            "Agent-Credential": "eyJhbGciOiJFZERTQSIsImtpZCI6ImtleV8ycjYwSkdjc19nUEZQMnFKamxwYWR5IiwidHlwIjoiYWlkci1jcmVkK2p3dCJ9.eyJhZ2FsIjoxLCJhc3N1cmFuY2UiOjIsImNhcGFiaWxpdGllcyI6WyJodHRwLnJlYWQiLCJmb3JtLnN1Ym1pdCJdLCJjbmYiOnsiandrIjp7ImFsZyI6IkVkRFNBIiwiY3J2IjoiRWQyNTUxOSIsImt0eSI6Ik9LUCIsInVzZSI6InNpZyIsIngiOiJiZHF2UzZXWExDcnVxOEhfUUVMMlo1UVVpbVFsMXhQemZCNDNUS2VyWlRnIn0sImtpZCI6ImtleV9IR043R0FWZDdlN2c5RHRUQjNJVDFnIn0sImRhbCI6MCwiZGVjbGFyZWQiOnsiYWN0c19vbl9iZWhhbGZfb2YiOiJvcmdhbml6YXRpb24iLCJhZ2VudF90eXBlIjoiYXV0b25vbW91cyIsImF1dG9ub215X2xldmVsIjoic3VwZXJ2aXNlZCIsImNvbnRhY3RfZm9yX2FidXNlIjpudWxsLCJodW1hbl9vdmVyc2lnaHQiOnRydWUsIm1vZGVsX2ZhbWlseSI6ImN1c3RvbS1sbG0iLCJtb2RlbF92ZXJzaW9uIjoiMi4xLjAiLCJwdXJwb3NlcyI6W10sInJlc3BlY3RzX3JvYm90c190eHQiOnRydWV9LCJleHAiOjE3OTA5NDYzNTEsImlhdCI6MTc5MDk0NTQ1MSwiaXNzIjoiaHR0cHM6Ly9yZWdpc3RyeS5haWRyLmV4YW1wbGUiLCJqdGkiOiIwMU0zWUEwQkNSODdUWVJQR1lZWDdDTUVaSiIsImthbCI6MSwibmJmIjoxNzkwOTQ1NDUxLCJvYWwiOjIsIm9yZyI6ImFjbWUtY29ycCIsIm9yZ19kb21haW5zIjpbXSwic2NvcGVzIjpbXSwic3RhbmRpbmciOnsiYWJ1c2VfcmVwb3J0c191cGhlbGQiOjAsInN1c3BlbnNpb25zIjowfSwic3ViIjoiYWlkOnYxOmFjbWUtY29ycDowMU0zWUEwQkNSUTcyNVpOODYwTVpLR0M4UToyZDhnIn0.-DUje9VOalsWUb4jNyhVVnmpZ1c-gEYGfE9gTYQzml14IpSTRVYV75OhnZbI6OmrAQIHBm3mZd8nON4cDQdwAw"
+          },
+          "evaluate_at": 1790945451,
+          "expect": "deny",
+          "name": "revocation data 700 s old refuses agents",
+          "expect_code": "aidr.registry.unavailable"
+        }
+      ],
+      "sequences": [
+        {
+          "name": "a forged request does not consume the genuine request's nonce",
+          "steps": [
+            {
+              "case": "tampered signature is refused",
+              "expect": "deny",
+              "expect_code": "aidr.crypto.signature_invalid"
+            },
+            {
+              "case": "valid request verifies",
+              "expect": "allow"
+            }
+          ]
+        },
+        {
+          "name": "a replayed request is refused",
+          "steps": [
+            {
+              "case": "valid request verifies",
+              "expect": "allow"
+            },
+            {
+              "case": "valid request verifies",
+              "expect": "deny",
+              "expect_code": "aidr.verify.replay_detected"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

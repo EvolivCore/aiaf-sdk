@@ -9,6 +9,7 @@ from typing import Any, Literal
 
 import httpx
 
+from aidr_crypto import web_bot_auth
 from aidr_crypto.signatures import CREDENTIAL_HEADER, sign_request
 
 from .identity import DEFAULT_REGISTRY, AgentIdentity, normalize_origin
@@ -19,6 +20,7 @@ logger = logging.getLogger("aidr_agent")
 
 TOKEN_ENV = "AIDR_ENROLLMENT_TOKEN"  # noqa: S105 - a variable name, not a secret
 REGISTRY_ENV = "AIDR_REGISTRY_URL"
+WEB_BOT_AUTH_ENV = "AIDR_WEB_BOT_AUTH"   # the key directory URL; turns Web Bot Auth signing on
 
 OnUnlisted = Literal["unsigned", "refuse"]
 
@@ -35,12 +37,21 @@ class Agent:
     this SDK then signs for any https origin. Requests elsewhere go out unsigned (anonymous), or
     are refused with ``on_unlisted="refuse"``. Plain http is never signed except to localhost: a
     credential sent in clear text is a credential given away.
+
+    ``web_bot_auth`` (or AIDR_WEB_BOT_AUTH): the https URL of the key directory this agent's
+    operator hosts (:meth:`web_bot_auth_directory`). With it, each request is signed once in the
+    Web Bot Auth profile, which Web Bot Auth verifiers such as Cloudflare's edge check through that
+    directory, and AIDR verifiers 0.2.1 and later accept. Earlier AIDR verifiers refuse it, so turn
+    it on only where the sites you call run 0.2.1 or later. Ed25519 keys only.
     """
 
     def __init__(self, identity: AgentIdentity, *, sign_for: Iterable[str] | None = None,
                  on_unlisted: OnUnlisted = "unsigned", registry_http: httpx.Client | None = None,
-                 registry_async_http: httpx.AsyncClient | None = None) -> None:
+                 registry_async_http: httpx.AsyncClient | None = None,
+                 web_bot_auth: str | None = None) -> None:
         self.identity = identity
+        self.web_bot_auth = web_bot_auth if web_bot_auth is not None else (
+            os.environ.get(WEB_BOT_AUTH_ENV) or None)
         allowed = identity.audiences if sign_for is None else [normalize_origin(o) for o in sign_for]
         if identity.audiences and not set(allowed) <= set(identity.audiences):
             raise NotAllowed(f"the registry issues credentials only for {identity.audiences}")
@@ -59,7 +70,8 @@ class Agent:
                        key_store: KeyStore | None = None, description: str = "",
                        on_unlisted: OnUnlisted = "unsigned",
                        registry_http: httpx.Client | None = None,
-                       registry_async_http: httpx.AsyncClient | None = None) -> Agent:
+                       registry_async_http: httpx.AsyncClient | None = None,
+                       web_bot_auth: str | None = None) -> Agent:
         """The identity saved for ``name``, or — first run only — enroll with the token.
 
         The token comes from ``token`` or AIDR_ENROLLMENT_TOKEN and is used once; after that the
@@ -73,7 +85,7 @@ class Agent:
                     logger.info("agent %s is already enrolled (%s); %s is no longer needed",
                                 name, identity.aid, TOKEN_ENV)
                 return cls(identity, on_unlisted=on_unlisted, registry_http=registry_http,
-                           registry_async_http=registry_async_http)
+                           registry_async_http=registry_async_http, web_bot_auth=web_bot_auth)
 
         presented = token or os.environ.get(TOKEN_ENV)
         if not presented:
@@ -90,7 +102,7 @@ class Agent:
         writable.save(identity)
         logger.info("enrolled %s", identity.aid)
         return cls(identity, on_unlisted=on_unlisted, registry_http=registry_http,
-                   registry_async_http=registry_async_http)
+                   registry_async_http=registry_async_http, web_bot_auth=web_bot_auth)
 
     @property
     def aid(self) -> str:
@@ -117,10 +129,7 @@ class Agent:
             self._unlisted(url)
             return {}
         credential = self.credentials.get(normalize_origin(url), http)
-        signed = sign_request(method=method, url=url, headers=dict(headers or {}),
-                              private_key=self.identity.private_key, keyid=self.identity.aid)
-        signed[CREDENTIAL_HEADER] = credential
-        return signed
+        return self._signed(method, url, headers, credential)
 
     async def asign_headers(self, method: str, url: str, headers: Mapping[str, str] | None = None,
                             *, http: httpx.AsyncClient | None = None) -> dict[str, str]:
@@ -128,10 +137,25 @@ class Agent:
             self._unlisted(url)
             return {}
         credential = await self.credentials.aget(normalize_origin(url), http)
-        signed = sign_request(method=method, url=url, headers=dict(headers or {}),
-                              private_key=self.identity.private_key, keyid=self.identity.aid)
+        return self._signed(method, url, headers, credential)
+
+    def _signed(self, method: str, url: str, headers: Mapping[str, str] | None,
+                credential: str) -> dict[str, str]:
+        if self.web_bot_auth:
+            signed = web_bot_auth.sign_request(method=method, url=url,
+                                               private_key=self.identity.private_key,
+                                               signature_agent=self.web_bot_auth)
+        else:
+            signed = sign_request(method=method, url=url, headers=dict(headers or {}),
+                                  private_key=self.identity.private_key, keyid=self.identity.aid)
         signed[CREDENTIAL_HEADER] = credential
         return signed
+
+    def web_bot_auth_directory(self, authority: str) -> tuple[dict[str, str], bytes]:
+        """The signed key directory to serve at https://<authority>/.well-known/
+        http-message-signatures-directory (and register with Cloudflare): headers and body. It
+        expires after a day; serve a fresh one from a scheduled job."""
+        return web_bot_auth.signed_directory(self.identity.private_key, authority)
 
     # -- adapters -----------------------------------------------------------------------------
 

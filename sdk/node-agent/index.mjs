@@ -11,10 +11,11 @@
  * public half. The same identity file and format as the Python SDK (`aidr-agent`).
  */
 
-export { Agent, NotAllowed, REGISTRY_ENV, TOKEN_ENV } from './src/agent.mjs';
+export { Agent, NotAllowed, REGISTRY_ENV, TOKEN_ENV, WEB_BOT_AUTH_ENV } from './src/agent.mjs';
 export { createSignedFetch } from './src/fetch.mjs';
 export { AgentIdentity, DEFAULT_REGISTRY, FORMAT, IdentityError, normalizeOrigin } from './src/identity.mjs';
 export { EnvKeyStore, FileKeyStore, HOME_ENV, IDENTITY_ENV, defaultHome } from './src/keystore.mjs';
 export { generateKey, publicJwk } from './src/keys.mjs';
 export { CredentialCache, POP_CONTEXT, RegistryError, enroll, tokenId } from './src/registry.mjs';
 export { CREDENTIAL_HEADER, SIGNATURE_HEADER, SIGNATURE_INPUT_HEADER, signRequest } from './src/signatures.mjs';
+export * as webBotAuth from './src/webbotauth.mjs';

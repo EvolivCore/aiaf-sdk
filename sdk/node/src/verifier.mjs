@@ -44,6 +44,7 @@ import {
   REQUIRED_COMPONENTS,
   effectiveRequestUri,
   importPublicKey,
+  jwkThumbprint,
   verifyCompact,
   verifyRequestSignature,
 } from './crypto.mjs';
@@ -169,7 +170,9 @@ export class AgentVerifier {
         : null,
       // The signature's keyid must be the identifier the credential was issued for. Without this,
       // a valid credential for agent A could be paired with a signature made by agent B's key.
-      expectedKeyid: aid,
+      // The credential's own key, named by its identifier or (a Web Bot Auth signature) by the
+      // thumbprint of cnf.jwk; the key that verifies is cnf.jwk either way.
+      expectedKeyid: [aid, jwkThumbprint(agentJwk)],
     });
 
     // 7. the site's own policy

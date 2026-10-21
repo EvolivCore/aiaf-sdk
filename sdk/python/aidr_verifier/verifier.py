@@ -56,6 +56,7 @@ from aidr_crypto.signatures import (
     effective_request_uri,
     verify_request,
 )
+from aidr_crypto.web_bot_auth import jwk_thumbprint
 
 from .trust import TrustStore
 
@@ -264,10 +265,11 @@ class AgentVerifier:
             max_age_seconds=self.policy.max_signature_age_seconds,
             now=moment,
             nonce_seen=self.nonce_seen if self.policy.require_nonce else None,
-            # The signature's keyid must be the identifier the credential was issued for.
-            # Without this, a valid credential for agent A could be paired with a signature made
-            # by agent B's key, letting B act under A's identity.
-            expected_keyid=aid,
+            # The signature's keyid must name the credential's own key: the identifier it was
+            # issued for, or (a Web Bot Auth signature) the thumbprint of its cnf.jwk. Without
+            # this, a valid credential for agent A could be paired with a signature made by agent
+            # B's key, letting B act under A's identity. The key that verifies is cnf.jwk either way.
+            expected_keyid=(aid, jwk_thumbprint(agent_jwk)),
         )
 
         # 7. the site's own policy

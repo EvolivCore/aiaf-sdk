@@ -50,6 +50,14 @@ jobs:
         if: matrix.verifier == 'worker'
         working-directory: edge/cloudflare-worker
         run: npm test
+      - name: API Gateway Lambda authorizer
+        if: matrix.verifier == 'node'
+        working-directory: edge/aws-lambda-authorizer
+        run: npm test
+      - name: Kong plugin
+        if: matrix.verifier == 'node'
+        working-directory: edge/kong-plugin
+        run: npm test
 
       - uses: actions/setup-go@v5
         if: matrix.verifier == 'go'

@@ -3,7 +3,8 @@
  * through `Agent` and `createSignedFetch`, captured as the request would leave the process.
  * Used by `scripts/generate_test_vectors.py --signer node-agent` (docs/13, step 1).
  *
- *   stdin:  {"method", "url", "private_jwk", "keyid", "credential", "created"?: epoch seconds}
+ *   stdin:  {"method", "url", "private_jwk", "keyid", "credential", "created"?: epoch seconds,
+ *            "web_bot_auth"?: a Signature-Agent URL, to sign in the Web Bot Auth profile}
  *   stdout: the request's headers, as JSON
  */
 
@@ -15,7 +16,8 @@ import { privateKeyFromJwk } from '../src/keys.mjs';
 const input = JSON.parse(readFileSync(0, 'utf8'));
 const identity = new AgentIdentity({ aid: input.keyid, name: 'conformance', registry: 'https://registry.aidr.example',
   privateKey: privateKeyFromJwk(input.private_jwk) });
-const agent = new Agent(identity, { clock: () => (input.created ? new Date(input.created * 1000) : new Date()) });
+const agent = new Agent(identity, { clock: () => (input.created ? new Date(input.created * 1000) : new Date()),
+  webBotAuth: input.web_bot_auth ?? null });
 // The credential the fixture issued, in place of a registry round trip.
 agent.credentials = { get: async () => input.credential };
 

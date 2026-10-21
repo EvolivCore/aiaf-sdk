@@ -1,6 +1,6 @@
 {
   "name": "@aidr/cloudflare-edge",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "AIDR agent verification at the Cloudflare edge: WebCrypto verifier, Durable Object replay protection, signed origin context.",
   "license": "Apache-2.0",
   "private": true,
