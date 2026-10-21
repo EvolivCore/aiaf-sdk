@@ -36,6 +36,7 @@ class OrgStatus(str, Enum):
 
 class OrgTier(str, Enum):
     FREE = "free"           # permanent and non-discriminatory — see docs/01-architecture.md §0.3
+    TEAM = "team"
     PRO = "pro"
     ENTERPRISE = "enterprise"
 
@@ -214,11 +215,39 @@ class TermsAcceptance:
 
 
 @dataclass
+class OrgSuspension:
+    """Why an organisation is suspended, by whom, and what to put back (docs/17).
+
+    Present exactly while ``Organization.status`` is SUSPENDED. The agents it suspended carry its
+    ``id`` (``Agent.org_suspension_id``), so reinstating restores those and no others: an agent
+    that was already suspended for its own reasons stays suspended.
+    """
+
+    id: str
+    reason: str
+    suspended_by: str
+    approved_by: str
+    previous_status: str                     # what the organisation returns to: pending | active
+    suspended_at: datetime = field(default_factory=utcnow)
+    agents_suspended: int = 0
+
+
+@dataclass
 class OrgLimits:
     #: Agents the organisation may hold (every one not revoked counts); None is unlimited. Set from
     #: the plan (aidr_core.plans) at self-service sign-up and whenever the plan changes.
     max_agents: int | None = 100
+    #: Credentials one agent may be issued in an hour.
     max_issuance_per_hour: int = 100
+    # The three below came with billing step 4 (docs/14). Their defaults are what every
+    # organisation had before it — no member limit, the whole audit log, exports of 5,000 — so a
+    # stored organisation without these fields keeps exactly that until its plan changes.
+    #: Members, counting pending invitations; None is unlimited.
+    max_members: int | None = None
+    #: How far back the audit log and its export reach, in days; None is everything.
+    audit_window_days: int | None = None
+    #: Entries in one audit export: 0 is no export, None is no cap.
+    audit_export_entries: int | None = 5000
 
 
 @dataclass
@@ -265,6 +294,8 @@ class Organization:
     #: The API terms last accepted. Absent, or an older version: no new agents or enrollment
     #: tokens while AIDR_TERMS=required.
     terms: TermsAcceptance | None = None
+    #: Set while the organisation is suspended by Evoliv (docs/17).
+    suspension: OrgSuspension | None = None
     created_at: datetime = field(default_factory=utcnow)
     updated_at: datetime = field(default_factory=utcnow)
     version: int = 1
@@ -345,6 +376,12 @@ class Owner:
     auth: OwnerAuth = field(default_factory=OwnerAuth)
     last_login_at: datetime | None = None
     created_at: datetime = field(default_factory=utcnow)
+    #: Set when an admin removed the member (status "removed"). The record stays, because the
+    #: ledger and the agents' history name it; its sign-in binding and its address are released
+    #: so the person can be invited again or join another organisation.
+    removed_at: datetime | None = None
+    removed_by: str | None = None
+    former_email: str | None = None
 
     def requires_hardware_mfa(self) -> bool:
         """Privileged roles require a hardware authenticator, with no TOTP fallback.
@@ -627,6 +664,8 @@ class Agent:
     keys: list[AgentKey] = field(default_factory=list)
     status: AgentStatus = AgentStatus.PENDING_PROOF
     status_reason: str | None = None
+    #: The organisation suspension that suspended this agent, if that is why it is suspended.
+    org_suspension_id: str | None = None
     assurance: AgentAssurance = field(default_factory=AgentAssurance)
     standing: AgentStanding = field(default_factory=AgentStanding)
     counters: AgentCounters = field(default_factory=AgentCounters)
@@ -803,6 +842,47 @@ class StaffNotification:
     org_id: str | None = None
     detail: dict[str, Any] = field(default_factory=dict)
     read_by: list[str] = field(default_factory=list)
+    created_at: datetime = field(default_factory=utcnow)
+
+
+class SupportStatus(str, Enum):
+    OPEN = "open"            # waiting for Evoliv
+    ANSWERED = "answered"    # Evoliv replied; waiting for the member
+    SOLVED = "solved"        # closed by either side; a reply within 14 days reopens it
+
+
+@dataclass
+class SupportRequest:
+    """A member's request to Evoliv, made from the console (docs/15, step 4). The conversation is
+    in ``SupportMessage`` records. ``opened_by`` is the opener's sign-in subject, as the ledger
+    records an actor. ``waiting_since`` is the first message Evoliv has not yet answered."""
+
+    id: str
+    org_id: str
+    opened_by: str
+    subject: str
+    category: str                            # account | agents | verification | billing | other
+    agent_id: str | None = None
+    status: SupportStatus = SupportStatus.OPEN
+    message_count: int = 0
+    waiting_since: datetime | None = None
+    last_message_at: datetime = field(default_factory=utcnow)
+    solved_at: datetime | None = None
+    solved_by: str | None = None             # member | staff
+    created_at: datetime = field(default_factory=utcnow)
+    updated_at: datetime = field(default_factory=utcnow)
+
+
+@dataclass
+class SupportMessage:
+    """One message of a support request: plain text, from a member or from Evoliv staff."""
+
+    id: str
+    request_id: str
+    org_id: str
+    author: str                              # member | staff
+    author_id: str
+    body: str
     created_at: datetime = field(default_factory=utcnow)
 
 

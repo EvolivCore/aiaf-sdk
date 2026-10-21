@@ -21,43 +21,10 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any
 
-import httpx
-
-from .identity import normalize_origin
+from ._tools import DEFAULT_MAX_CHARS, OriginNotAllowed, SignedCalls, allowed_origins
 
 if TYPE_CHECKING:
     from .agent import Agent
-
-DEFAULT_MAX_CHARS = 20_000
-
-
-class OriginNotAllowed(ValueError):
-    pass
-
-
-def _origins(agent: Agent, origins: Iterable[str] | None) -> frozenset[str]:
-    chosen = frozenset(normalize_origin(o) for o in origins) if origins is not None else agent.sign_for
-    if not chosen:
-        raise ValueError("name the origins these tools may reach (origins=[...]): this agent has no "
-                         "allowed audiences to default to")
-    return chosen
-
-
-def _check(url: str, allowed: frozenset[str]) -> None:
-    try:
-        origin = normalize_origin(url)
-    except ValueError as exc:
-        raise OriginNotAllowed(f"not a URL: {url!r}") from exc
-    if origin not in allowed:
-        raise OriginNotAllowed(f"{origin} is not one of the sites this tool may reach: "
-                               f"{', '.join(sorted(allowed))}")
-
-
-def _render(response: httpx.Response, max_chars: int) -> str:
-    text = response.text
-    if len(text) > max_chars:
-        text = text[:max_chars] + f"\n…[truncated, {len(response.text)} characters in all]"
-    return f"HTTP {response.status_code}\n{text}"
 
 
 def aidr_http_tools(agent: Agent, *, origins: Iterable[str] | None = None,
@@ -67,9 +34,8 @@ def aidr_http_tools(agent: Agent, *, origins: Iterable[str] | None = None,
     from langchain_core.tools import StructuredTool
     from pydantic import BaseModel, Field
 
-    allowed = _origins(agent, origins)
-    auth = agent.httpx_auth()
-    sites = ", ".join(sorted(allowed))
+    calls = SignedCalls(agent, allowed_origins(agent, origins), max_chars=max_chars, timeout=timeout)
+    sites = calls.sites
     tools: list[Any] = []
 
     class GetArgs(BaseModel):
@@ -79,34 +45,14 @@ def aidr_http_tools(agent: Agent, *, origins: Iterable[str] | None = None,
         url: str = Field(description=f"Absolute URL on one of: {sites}")
         body: dict[str, Any] = Field(default_factory=dict, description="JSON body to send")
 
-    def get(url: str) -> str:
-        _check(url, allowed)
-        with httpx.Client(auth=auth, timeout=timeout, follow_redirects=False) as client:
-            return _render(client.get(url), max_chars)
-
-    async def aget(url: str) -> str:
-        _check(url, allowed)
-        async with httpx.AsyncClient(auth=auth, timeout=timeout, follow_redirects=False) as client:
-            return _render(await client.get(url), max_chars)
-
-    def post(url: str, body: dict[str, Any] | None = None) -> str:
-        _check(url, allowed)
-        with httpx.Client(auth=auth, timeout=timeout, follow_redirects=False) as client:
-            return _render(client.post(url, json=body or {}), max_chars)
-
-    async def apost(url: str, body: dict[str, Any] | None = None) -> str:
-        _check(url, allowed)
-        async with httpx.AsyncClient(auth=auth, timeout=timeout, follow_redirects=False) as client:
-            return _render(await client.post(url, json=body or {}), max_chars)
-
     wanted = {m.upper() for m in methods}
     if "GET" in wanted:
         tools.append(StructuredTool.from_function(
-            func=get, coroutine=aget, name="http_get", args_schema=GetArgs,
+            func=calls.get, coroutine=calls.aget, name="http_get", args_schema=GetArgs,
             description=f"Fetch a URL as the verified agent {agent.aid}. Sites: {sites}."))
     if "POST" in wanted:
         tools.append(StructuredTool.from_function(
-            func=post, coroutine=apost, name="http_post", args_schema=PostArgs,
+            func=calls.post, coroutine=calls.apost, name="http_post", args_schema=PostArgs,
             description=f"POST JSON to a URL as the verified agent {agent.aid}. Sites: {sites}."))
     return tools
 

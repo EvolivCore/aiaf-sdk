@@ -188,6 +188,14 @@ class LastOrgAdmin(InvalidState):
     code = "aidr.registry.last_admin"
 
 
+class PasskeyResetUnavailable(RegistryError):
+    """This deployment has no credential with which to reset a passkey (docs/16). Its own code so
+    that a console can hide the action instead of offering one that cannot work."""
+
+    code = "aidr.registry.passkey_reset_unavailable"
+    http_status = 404
+
+
 class ChallengeExpired(RegistryError):
     code = "aidr.registry.challenge_expired"
     http_status = 410
@@ -221,9 +229,32 @@ class AgentQuotaExceeded(QuotaExceeded):
     http_status = 403
 
 
+class MemberLimitReached(QuotaExceeded):
+    """The organisation has as many members, counting pending invitations, as its plan allows.
+    Like the agent limit, not a rate limit: 403, and its own code so a client can point at the
+    plan page."""
+
+    code = "aidr.registry.member_limit"
+    http_status = 403
+
+
 class PolicyViolation(RegistryError):
     code = "aidr.registry.policy_violation"
     http_status = 403
+
+
+class OrganizationSuspended(PolicyViolation):
+    """The organisation is suspended by Evoliv: its members can read, revoke and write to
+    support, and change nothing else. Its own code so that a client can say so plainly."""
+
+    code = "aidr.registry.organization_suspended"
+
+
+class CompanySignInRequired(PolicyViolation):
+    """The organisation requires its company sign-in (enterprise SSO, docs/18) for this person, who
+    signed in another way. Its own code, so that a console can send them to the company sign-in."""
+
+    code = "aidr.registry.sso_required"
 
 
 class TermsNotAccepted(PolicyViolation):

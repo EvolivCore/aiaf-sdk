@@ -117,6 +117,6 @@ from .onboarding import (
 )
 from .serde import from_jsonable, parse_datetime, to_jsonable, utcnow
 
-__version__ = "0.1.3"
+__version__ = "0.2.0"
 
 __all__ = [name for name in dir() if not name.startswith("_")]

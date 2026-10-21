@@ -3,7 +3,7 @@
 Give an AI agent a verifiable AIDR identity from its first run. Apache-2.0.
 
 ```
-pip install "aidr-agent[requests]"          # add ,langchain for the LangChain tools
+pip install "aidr-agent[requests]"          # add ,langchain or ,llamaindex for the tools
 ```
 
 ```python
@@ -22,7 +22,7 @@ agent.session().get("https://shop.example/products")   # signed; other sites get
    signed, except to localhost.
 
 Python 3.10+. Extras: `requests` (for `agent.session()` / `agent.auth()`), `langchain` (the tools, on
-`langchain-core`), `langchain-community` (the `RequestsToolkit` wrapper). It installs `aidr-crypto`
+`langchain-core`), `llamaindex` (the same tools, on `llama-index-core`), `langchain-community` (the `RequestsToolkit` wrapper). It installs `aidr-crypto`
 and `aidr-core`, the same signing code the registry runs.
 
 ## Where the identity is kept
@@ -54,6 +54,15 @@ choosing URLs is how a prompt-injected agent would present its identity somewher
 reach internal addresses. For code still on `langchain-community`'s `RequestsToolkit`,
 `signed_requests_wrapper(agent)` is a drop-in `TextRequestsWrapper` that signs, sync and async.
 `langchain-community` is being sunset, so new code should use the tools.
+
+## LlamaIndex
+
+```python
+from aidr_agent.llamaindex import aidr_http_tools
+from llama_index.core.agent.workflow import FunctionAgent
+
+workflow = FunctionAgent(tools=aidr_http_tools(agent), llm=llm)   # the same two tools, same limits
+```
 
 ## Command line
 

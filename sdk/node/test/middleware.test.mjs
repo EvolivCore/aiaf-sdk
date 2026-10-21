@@ -58,7 +58,8 @@ async function call(middleware, testCase, { path = null, headers = null } = {}) 
 
 async function site(options = {}, registryOptions = {}) {
   const fake = registry(SUITE, registryOptions);
-  const middleware = aidr({ issuer: SUITE.issuer, fetch: fake.fetch, clock: () => NOW, ...options });
+  const middleware = aidr({ issuer: SUITE.issuer, publicOrigin: 'https://shop.example', fetch: fake.fetch, clock: () => NOW,
+    ...options });
   await middleware.ready;
   return { middleware, calls: fake.calls };
 }
@@ -123,9 +124,11 @@ describe('every shared vector case through the middleware', () => {
     for (const testCase of suite.cases) {
       it(`${suite.algorithm}: ${testCase.name}`, async () => {
         const fake = registry(suite);
+        // The site the case visits is the one its URL names (its own origin), or — for a case with an
+        // explicit audience — a site at that audience.
         const middleware = aidr({ issuer: suite.issuer, fetch: fake.fetch, clock: () => NOW,
           minAgal: testCase.min_assurance ?? 0,
-          ...(testCase.expected_audience ? { publicOrigin: testCase.expected_audience } : {}) });
+          publicOrigin: testCase.expected_audience ?? new URL(testCase.url).origin });
         await middleware.ready;
         // A case with an explicit audience is a site at that origin, verifying a request signed
         // for another: the signature then fails, which is still a refusal.
@@ -179,7 +182,7 @@ describe('trust sync', () => {
     let release;
     const gate = new Promise((resolve) => { release = resolve; });
     const slowFetch = async (url) => { await gate; return fake.fetch(url); };
-    const middleware = aidr({ issuer: SUITE.issuer, fetch: slowFetch, clock: () => NOW });
+    const middleware = aidr({ issuer: SUITE.issuer, publicOrigin: 'https://shop.example', fetch: slowFetch, clock: () => NOW });
     const url = new URL(ALLOW.url);
     const req = { method: ALLOW.method, originalUrl: url.pathname, headers: { host: url.host, ...ALLOW.headers } };
     const res = { statusCode: 200, setHeader() {}, end(body) { this.body = body; } };
@@ -192,7 +195,7 @@ describe('trust sync', () => {
 
   it('before trust is loaded, agents get 503 and anonymous traffic still flows', async () => {
     const down = async () => new Response('', { status: 502 });
-    const middleware = aidr({ issuer: SUITE.issuer, fetch: down, clock: () => NOW });
+    const middleware = aidr({ issuer: SUITE.issuer, publicOrigin: 'https://shop.example', fetch: down, clock: () => NOW });
     assert.equal(await middleware.ready, false);
     assert.equal((await call(middleware, null)).passed, true);
     const { res } = await call(middleware, ALLOW);
@@ -221,7 +224,7 @@ describe('the older expressMiddleware', () => {
   it('optional: a garbage credential is refused, not passed as anonymous', () => {
     const trust = buildTrustStore(SUITE.jwks, { deltaToken: SUITE.revocation.delta_before_revocation,
       expectedIssuer: SUITE.issuer });
-    const middleware = expressMiddleware(new AgentVerifier(trust), { optional: true });
+    const middleware = expressMiddleware(new AgentVerifier(trust), { optional: true, publicOrigin: 'https://shop.example' });
     const res = { statusCode: 200, setHeader() {}, end() {} };
     let passed = false;
     middleware({ method: 'GET', url: '/', headers: { host: 'shop.example', 'agent-credential': 'x' } },
@@ -293,6 +296,6 @@ describe('aidr(): a request is judged as this site, not as the Host the client s
   it('from 0.2.0: without an origin, an agent at another host is refused — people are not', async () => {
     const resolve = originResolver({ env: {}, enforce: true });
     assert.throws(() => resolve('shop.example'), PublicOriginRequired);
-    assert.equal(ENFORCE_PUBLIC_ORIGIN, false, 'flip to true for 0.2.0');
+    assert.equal(ENFORCE_PUBLIC_ORIGIN, true, 'enforced from 0.2.0');
   });
 });

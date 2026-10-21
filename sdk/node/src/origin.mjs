@@ -22,8 +22,8 @@ import { AidrError } from './util.mjs';
 
 export const PUBLIC_ORIGIN_ENV = 'AIDR_PUBLIC_ORIGIN';
 
-/** false in 0.1.x (warn), true from 0.2.0 (refuse). */
-export const ENFORCE_PUBLIC_ORIGIN = false;
+/** true from 0.2.0 (refuse); 0.1.x warned. */
+export const ENFORCE_PUBLIC_ORIGIN = true;
 
 export class PublicOriginRequired extends AidrError {
   constructor() {

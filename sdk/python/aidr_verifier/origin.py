@@ -31,8 +31,8 @@ logger = logging.getLogger("aidr_verifier")
 
 PUBLIC_ORIGIN_ENV = "AIDR_PUBLIC_ORIGIN"
 
-#: False in 0.1.x (warn), True from 0.2.0 (refuse).
-ENFORCE_PUBLIC_ORIGIN = False
+#: True from 0.2.0 (refuse); 0.1.x warned.
+ENFORCE_PUBLIC_ORIGIN = True
 
 
 class PublicOriginRequired(AidrError):

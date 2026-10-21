@@ -5,10 +5,10 @@ in any way that matters means changing the version: every organisation must then
 before it registers another agent or issues another enrollment token. The console carries the same
 value (web/dashboard/src/lib/terms.ts); a test keeps the two equal.
 
-The current text is a DRAFT placeholder pending legal review.
+The current text is INTERIM wording (the owner's decisions in docs/20), pending legal review.
 """
 
 from __future__ import annotations
 
-CURRENT_TERMS_VERSION = "2026-10-09-draft"
+CURRENT_TERMS_VERSION = "2026-10-20-interim"
 TERMS_PATH = "/api-terms"

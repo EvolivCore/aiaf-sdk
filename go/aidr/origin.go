@@ -25,8 +25,8 @@ import (
 // PublicOriginEnv names the environment variable read when Policy.PublicOrigins is empty.
 const PublicOriginEnv = "AIDR_PUBLIC_ORIGIN"
 
-// EnforcePublicOrigin is false in 0.1.x (warn) and true from 0.2.0 (refuse).
-var EnforcePublicOrigin = false
+// EnforcePublicOrigin is true from 0.2.0 (refuse); 0.1.x warned.
+var EnforcePublicOrigin = true
 
 // CodePublicOriginRequired is returned when nothing says which site this is.
 const CodePublicOriginRequired = "aidr.config.public_origin_required"

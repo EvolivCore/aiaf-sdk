@@ -57,14 +57,19 @@ async def sign_compact(payload: dict[str, Any], signer: Any, *, typ: str = CREDE
     """Produce a compact JWS: ``base64url(header).base64url(payload).base64url(signature)``."""
     # The algorithm comes from the signer, not from a constant: a FIPS-strict deployment signs
     # with ES256, and the header must say so or every verifier will reject it.
+    # The kid is read once and the signature made with exactly that key version (sign_as), so the
+    # header never names a version other than the one that signed, even mid-rotation.
+    from .signer import sign_as
+
+    kid = signer.key_id
     header: dict[str, Any] = {
-        "alg": getattr(signer, "algorithm", ALG_ED25519), "typ": typ, "kid": signer.key_id,
+        "alg": getattr(signer, "algorithm", ALG_ED25519), "typ": typ, "kid": kid,
     }
     if extra_header:
         header.update(extra_header)
 
     signing_input = f"{_b64url_json(header)}.{_b64url_json(payload)}"
-    signature = await signer.sign(signing_input.encode("ascii"))
+    signature, _ = await sign_as(signer, signing_input.encode("ascii"), kid)
     return f"{signing_input}.{b64url_encode(signature)}"
 
 

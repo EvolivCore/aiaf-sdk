@@ -24,10 +24,12 @@ the first customer request.
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import logging
 import os
-from datetime import datetime, timezone
+import re
+from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol, runtime_checkable
 
 from aidr_core.errors import AidrError, RegistryUnavailable
@@ -169,6 +171,23 @@ class LocalDevSigner:
         return cls(jwk_to_private_key(jwk), key_id=jwk.get("kid"), **kwargs)
 
 
+#: How long a new key version is published before it signs: longer than any verifier caches the
+#: JWKS (an hour), plus the time it takes to be published (one refresh), with margin.
+DEFAULT_PUBLISH_LEAD = timedelta(hours=2)
+
+
+async def sign_as(signer: Any, data: bytes, key_id: str | None = None) -> tuple[bytes, str]:
+    """Sign ``data`` and return ``(signature, kid)``, the kid read once and signed with.
+
+    Reading ``signer.key_id`` and signing separately can disagree if the signer moves to a new
+    key version in between; every caller that records or publishes a kid uses this instead.
+    """
+    kid = key_id or signer.key_id
+    if getattr(signer, "signs_by_key_id", False):
+        return await signer.sign(data, key_id=kid), kid
+    return await signer.sign(data), kid
+
+
 class VaultTransitSigner:
     """Signs via HashiCorp Vault's Transit engine, backed by a PKCS#11 HSM.
 
@@ -192,10 +211,21 @@ class VaultTransitSigner:
     #: a validated one. :meth:`verify_controls` checks rather than assumes.
     hardware_backed = True
 
+    #: :meth:`sign` takes the ``key_id`` the caller put in its header (see :func:`sign_as`).
+    signs_by_key_id = True
+
     def __init__(self, vault_addr: str, key_name: str, token: str, *,
                  mount: str = "transit", timeout_seconds: float = 2.0,
                  namespace: str | None = None,
-                 policy: CryptoPolicy | None = None) -> None:
+                 policy: CryptoPolicy | None = None,
+                 signing_version: int | None = None,
+                 publish_lead: timedelta = DEFAULT_PUBLISH_LEAD,
+                 refresh_seconds: float = 60.0) -> None:
+        """``signing_version`` pins the version that signs (a rollback); otherwise the rule in
+        :meth:`_choose_signing_version` applies. ``publish_lead`` is how long a new version is
+        published before it signs anything; ``refresh_seconds`` how often :meth:`keep_fresh`
+        re-reads the versions from Vault.
+        """
         if not vault_addr:
             raise SignerMisconfigured("vault_addr is required")
         if not token:
@@ -215,6 +245,11 @@ class VaultTransitSigner:
         self._key_config: dict[str, Any] = {}
         self._vault_version: str = ""
         self._key_created_at: datetime | None = None
+        self._pinned_version = signing_version
+        self._publish_lead = publish_lead
+        self._refresh_seconds = refresh_seconds
+        #: Every version Vault holds: number -> (public JWK with its kid, creation time).
+        self._versions: dict[int, tuple[dict[str, Any], datetime | None]] = {}
 
     # -- Signer -----------------------------------------------------------------------------
 
@@ -231,11 +266,30 @@ class VaultTransitSigner:
         return self._algorithm.name
 
     def public_jwk(self) -> dict[str, Any]:
+        """The version that signs now."""
         if self._cached_jwk is None:
             raise SignerMisconfigured(
                 "public key not loaded — call await signer.load() at start-up"
             )
         return dict(self._cached_jwk)
+
+    def public_jwks(self) -> list[dict[str, Any]]:
+        """Every version Vault holds, oldest first: what the JWKS publishes.
+
+        A version is published from the moment it exists (within ``refresh_seconds``) and stays
+        published while Vault keeps it, so everything any version ever signed still verifies:
+        credentials, 90-day certificates, revocation lists and tree heads. Retiring a version is
+        a decision taken in Vault (``min_available_version``), not here (docs/22 §5).
+        """
+        if not self._versions:
+            raise SignerMisconfigured(
+                "public key not loaded — call await signer.load() at start-up"
+            )
+        return [dict(jwk) for _, (jwk, _created) in sorted(self._versions.items())]
+
+    @property
+    def signing_version(self) -> int:
+        return int(self._cached_version or 1)
 
     # -- transport --------------------------------------------------------------------------
 
@@ -293,23 +347,83 @@ class VaultTransitSigner:
                 f"support; expected one of ed25519, ecdsa-p256"
             ) from exc
 
-        versions = data.get("keys", {})
-        if not versions:
-            raise SignerMisconfigured(f"transit key {self._key_name!r} has no key versions")
-        latest = max(int(v) for v in versions)
-        entry = versions[str(latest)]
-        self._cached_version = latest
-
-        self._cached_jwk = self._jwk_from_vault_entry(entry)
-        self._cached_jwk["kid"] = self.key_id
-        self._key_created_at = _parse_vault_time(entry)
+        self._apply_key_data(data)
 
         if self._policy is not None:
             self._policy.enforce_algorithm(self._algorithm)
 
-        logger.info("Vault transit signer ready: key=%s type=%s version=%d vault=%s",
-                    self._key_name, key_type, latest, self._vault_version)
-        return dict(self._cached_jwk)
+        logger.info("Vault transit signer ready: key=%s type=%s signing=v%d published=%s vault=%s",
+                    self._key_name, key_type, self.signing_version, sorted(self._versions),
+                    self._vault_version)
+        return dict(self._cached_jwk or {})
+
+    async def refresh(self) -> None:
+        """Re-read the versions from Vault: publish new ones, and move signing on when it is time."""
+        payload = await self._request("GET", f"{self._mount}/keys/{self._key_name}")
+        before = self._cached_version
+        data = payload.get("data", {})
+        self._key_config = data
+        self._apply_key_data(data)
+        if self._cached_version != before:
+            logger.warning("signing key %s: now signing with version %d (was %s)",
+                           self._key_name, self.signing_version, before)
+
+    async def keep_fresh(self) -> None:
+        """Refresh every ``refresh_seconds`` until cancelled. A failed refresh keeps what it had."""
+        while True:
+            await asyncio.sleep(self._refresh_seconds)
+            try:
+                await self.refresh()
+            except Exception as exc:  # noqa: BLE001 - logged; the last good state stays in use
+                logger.warning("could not refresh the versions of signing key %s: %s",
+                               self._key_name, exc)
+
+    def _apply_key_data(self, data: dict[str, Any]) -> None:
+        raw_versions = data.get("keys", {})
+        if not raw_versions:
+            raise SignerMisconfigured(f"transit key {self._key_name!r} has no key versions")
+        versions: dict[int, tuple[dict[str, Any], datetime | None]] = {}
+        for raw_number, entry in raw_versions.items():
+            number = int(raw_number)
+            jwk = self._jwk_from_vault_entry(entry)
+            jwk["kid"] = f"vault:{self._key_name}:v{number}"
+            versions[number] = (jwk, _parse_vault_time(entry))
+        signing = self._choose_signing_version(versions)
+        # Each attribute is replaced whole, never edited in place: a signature in flight reads a
+        # consistent view.
+        self._versions = versions
+        self._cached_version = signing
+        self._cached_jwk = dict(versions[signing][0])
+        self._key_created_at = versions[max(versions)][1]
+
+    def _choose_signing_version(
+            self, versions: dict[int, tuple[dict[str, Any], datetime | None]]) -> int:
+        """The newest version published for at least ``publish_lead``; the oldest if none is.
+
+        Computed from Vault's own creation times, so every service picks the same version without
+        talking to the others. A version is published within ``refresh_seconds`` of its creation,
+        so by the time it signs, every verifier's cached JWKS (an hour at most) already lists it.
+        """
+        if self._pinned_version is not None:
+            if self._pinned_version not in versions:
+                raise SignerMisconfigured(
+                    f"signing version {self._pinned_version} of {self._key_name!r} is not in "
+                    f"Vault (it has {sorted(versions)})")
+            return self._pinned_version
+        # A version whose creation time cannot be read is never ready: the safe failure is to keep
+        # signing with the old version, never to start early with one verifiers may not know.
+        cutoff = datetime.now(timezone.utc) - self._publish_lead
+        ready = [n for n, (_, created) in versions.items() if created is not None and created <= cutoff]
+        return max(ready) if ready else min(versions)
+
+    def _version_of(self, key_id: str) -> int:
+        prefix = f"vault:{self._key_name}:v"
+        if not key_id.startswith(prefix) or not key_id[len(prefix):].isdigit():
+            raise SignerMisconfigured(f"{key_id!r} is not a version of {self._key_name!r}")
+        number = int(key_id[len(prefix):])
+        if number not in self._versions:
+            raise SignerMisconfigured(f"{key_id!r} is not a version Vault holds")
+        return number
 
     def _jwk_from_vault_entry(self, entry: Any) -> dict[str, Any]:
         """Build a JWK from Vault's public-key representation.
@@ -341,11 +455,19 @@ class VaultTransitSigner:
 
     # -- signing ----------------------------------------------------------------------------
 
-    async def sign(self, data: bytes) -> bytes:
+    async def sign(self, data: bytes, *, key_id: str | None = None) -> bytes:
+        """Sign with the version ``key_id`` names (default: the signing version), and only that one.
+
+        Vault signs with its newest version unless told otherwise; asking for the version
+        explicitly is what keeps the signature and the ``kid`` beside it in agreement during a
+        rotation.
+        """
         if self._cached_jwk is None:
             raise SignerMisconfigured("signer not loaded — call await signer.load() at start-up")
+        version = self._version_of(key_id) if key_id is not None else self.signing_version
 
-        body: dict[str, Any] = {"input": base64.b64encode(data).decode("ascii")}
+        body: dict[str, Any] = {"input": base64.b64encode(data).decode("ascii"),
+                                "key_version": version}
         if self._algorithm is not ED25519:
             # JOSE wants fixed-width R‖S; Vault's default is ASN.1 DER. Ed25519 has no such
             # distinction and rejects these parameters outright, hence the branch.
@@ -359,6 +481,8 @@ class VaultTransitSigner:
         parts = signature.split(":")
         if len(parts) != 3 or parts[0] != "vault":
             raise SignerMisconfigured(f"unexpected Vault signature format: {signature[:32]!r}")
+        if parts[1] != f"v{version}":
+            raise SignerMisconfigured(f"Vault signed with {parts[1]}, not the v{version} asked for")
 
         decoded = (b64url_decode(parts[2]) if self._algorithm is not ED25519
                    else base64.b64decode(parts[2]))
@@ -426,6 +550,8 @@ class VaultTransitSigner:
             "mount": self._mount,
             "key_name": self._key_name,
             "key_version": self._cached_version,
+            "published_versions": sorted(self._versions),
+            "signing_version_pinned": self._pinned_version is not None,
             "algorithm": self._algorithm.name,
             "hardware_backed": True,
             "key_non_exportable": not exportable,
@@ -449,17 +575,19 @@ class VaultTransitSigner:
         return evidence
 
     async def rotate(self) -> int:
-        """Rotate to a new key version.
+        """Create a new key version, and return its number.
 
-        Rotation is overlapping, never atomic: Vault keeps prior versions, and the new key is
-        published in JWKS and trusted for a full credential TTL plus margin before it begins
-        signing. The old version stays published until every credential it signed has expired.
+        Rotation is overlapping, never atomic: the new version is published at once and signs
+        only after ``publish_lead`` (:meth:`_choose_signing_version`); every older version stays
+        published, so nothing it signed stops verifying. Needs a token allowed to rotate, which
+        the services' token is not: in production this is the key ceremony (docs/22 §5).
         """
         await self._request("POST", f"{self._mount}/keys/{self._key_name}/rotate")
         await self.load()
-        logger.warning("rotated CA signing key %s to version %d",
-                       self._key_name, self._cached_version)
-        return int(self._cached_version or 1)
+        newest = max(self._versions)
+        logger.warning("rotated CA signing key %s: version %d published, signing with %d",
+                       self._key_name, newest, self.signing_version)
+        return newest
 
     async def health(self) -> dict[str, Any]:
         try:
@@ -485,6 +613,8 @@ def _parse_vault_time(entry: Any) -> datetime | None:
         return datetime.fromtimestamp(value, tz=timezone.utc)
     try:
         text = str(value).replace("Z", "+00:00")
+        # Vault writes nanoseconds (…:17.123456789+00:00); Python 3.10 takes at most microseconds.
+        text = re.sub(r"(\.\d{6})\d+", r"\1", text)
         parsed = datetime.fromisoformat(text)
         return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
     except ValueError:
