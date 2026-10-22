@@ -10,7 +10,8 @@
 AIDR verifies AI agents by cryptography, not by trust in a network, an IP address or a user-agent
 string. This page is for the security teams who evaluate it, and for researchers who find a flaw.
 
-**Report a vulnerability: security@evolivcore.com** — please do not open a public issue.
+**[Report a vulnerability](https://github.com/EvolivCore/aiaf-sdk/security/advisories/new)** privately on GitHub, or email **security@evolivcore.com**.
+Please do not open a public issue.
 
 ---
 
@@ -18,7 +19,7 @@ string. This page is for the security teams who evaluate it, and for researchers
 
 | | |
 |---|---|
-| **Report to** | security@evolivcore.com (also in [`/.well-known/security.txt`](https://evolivcore.com/.well-known/security.txt), RFC 9116) |
+| **Report to** | [GitHub private reporting](https://github.com/EvolivCore/aiaf-sdk/security/advisories/new), or security@evolivcore.com (also in [`/.well-known/security.txt`](https://evolivcore.com/.well-known/security.txt), RFC 9116) |
 | **Acknowledgement** | within 3 working days |
 | **First assessment** | within 10 working days, then updates until fixed |
 | **Critical issues** | worked on at once, any day of the week |
@@ -96,7 +97,7 @@ The full specification: [`spec/aiaf-draft.md`](spec/aiaf-draft.md).
 | **Three implementations, one result** | Python, Node.js and Go replay the same public conformance vectors on every change |
 | **Publishing** | PyPI and npm releases come from GitHub Actions through trusted publishing (OIDC): no long-lived upload tokens exist |
 | **Go** | Module checksums are recorded in the public Go checksum database |
-| **Dependencies** | Dependabot alerts on |
+| **Repository** | Dependabot alerts, secret scanning and push protection on: a commit containing a known credential type is blocked |
 
 ---
 
@@ -134,7 +135,8 @@ We update this table as each one lands.
 
 ## How to report
 
-Email **security@evolivcore.com** with:
+Use **[Report a vulnerability](https://github.com/EvolivCore/aiaf-sdk/security/advisories/new)** (the button on this repository's Security tab: a private
+advisory only we can see), or email **security@evolivcore.com**. Please include:
 
 - what is affected (host and path, package and version, or desktop app version and OS);
 - steps to reproduce, and what an attacker could do with it;
