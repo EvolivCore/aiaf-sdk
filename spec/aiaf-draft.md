@@ -565,7 +565,7 @@ An agent signs each request per RFC 9421. Conforming signatures:
 GET /api/products HTTP/1.1
 Host: shop.example
 Signature-Input: sig1=("@method" "@authority" "@path");created=1790243730;\
-  keyid="aid:v1:acme-corp:01J8Z…";alg="ed25519";nonce="k9Xr…";tag="aiaf"
+  keyid="aid:v1:acme-corp:01J8Z…";alg="ed25519";nonce="k9Xr…";tag="aidr"
 Signature: sig1=:MEUCIQD…:
 Agent-Credential: eyJhbGciOiJFZERTQSIsInR5cCI6…
 ```
